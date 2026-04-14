@@ -42,9 +42,10 @@
                             <i class="fas fa-layer-group" style="color: #56c0d8; font-size: 1.5rem;"></i>
                         </div>
                         <div>
-                            <div class="fw-bold" style="font-size: 0.85rem; color: #1e293b; line-height: 1.1;">DIRETORIA
+                            <div class="fw-bold" style="font-size: 0.85rem; color: #1e293b; line-height: 1.1;">Unidade
+                                Orçamentária
                             </div>
-                            <div class="fw-light" style="font-size: 0.75rem; color: #64748b;">Execução 2026</div>
+                            <!-- <div class="fw-light" style="font-size: 0.75rem; color: #64748b;">Execução 2026</div> -->
                         </div>
                     </div>
                 </div>
@@ -129,9 +130,9 @@
                                     <h6>Detalhamento de Disponibilidade</h6><i
                                         class="fas fa-chart-bar flip-trigger text-primary cursor-pointer"></i>
                                 </div>
-                                <div class="scroll-table">
-                                    <table class="table table-sm table-mini">
-                                        <thead>
+                                <div>
+                                    <table class="table table-sm table-hover" style="font-size: 0.75rem;">
+                                        <thead class="table-light">
                                             <tr>
                                                 <th>Categoria</th>
                                                 <th class="text-end">Valor</th>
@@ -167,12 +168,22 @@
                                     <table class="table table-sm table-mini table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>Grupo de Despesa</th>
-                                                <th>Autorizado</th>
-                                                <th>Empenhado</th>
-                                                <th>Liquidado</th>
-                                                <th>Empenhado/ Autorizado</th>
-                                                <th>Liqquidado/ Autorizado</th>
+                                                <th rowspan="2" style="vertical-align: middle;">Grupo de Despesa</th>
+                                                <th colspan="5" class="text-center table-active">2025</th>
+                                                <th colspan="5" class="text-center text-white"
+                                                    style="background: #1e3a8a;">2026</th>
+                                            </tr>
+                                            <tr>
+                                                <th style="font-size: 8px;">Autorizado.</th>
+                                                <th style="font-size: 8px;">Empenhado</th>
+                                                <th style="font-size: 8px;">Liquidado</th>
+                                                <th style="font-size: 8px;">Empenhado/Autorizado</th>
+                                                <th style="font-size: 8px;">Liquidado/Autorizado</th>
+                                                <th style="font-size: 8px;">Autorizado.</th>
+                                                <th style="font-size: 8px;">Empenhado</th>
+                                                <th style="font-size: 8px;">Liquidado</th>
+                                                <th style="font-size: 8px;">Empenhado/Autorizado</th>
+                                                <th style="font-size: 8px;">Liquidado/Autorizado</th>
                                             </tr>
                                         </thead>
                                         <tbody id="table-sucesso-detalhado"></tbody>
@@ -205,10 +216,22 @@
                                     <table class="table table-sm table-mini table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>Principais Grupos<br>de Despesa</th>
-                                                <th>Autorizado<br>(2025)</th>
-                                                <th>Autorizado<br>(2026)</th>
-                                                <th>Variação</th>
+                                                <th rowspan="2" style="vertical-align: middle;">Grupo de Despesa</th>
+                                                <th colspan="5" class="text-center table-active">2025</th>
+                                                <th colspan="5" class="text-center text-white"
+                                                    style="background: #1e3a8a;">2026</th>
+                                            </tr>
+                                            <tr>
+                                                <th style="font-size: 8px;">Orçado</th>
+                                                <th style="font-size: 8px;">Autorizado</th>
+                                                <th style="font-size: 8px;">Empenhado</th>
+                                                <th style="font-size: 8px;">Liquidado</th>
+                                                <th style="font-size: 8px; font-weight: bold;">Variação (%)</th>
+                                                <th style="font-size: 8px;">Orçado</th>
+                                                <th style="font-size: 8px;">Autorizado</th>
+                                                <th style="font-size: 8px;">Empenhado</th>
+                                                <th style="font-size: 8px;">Liquidado</th>
+                                                <th style="font-size: 8px; font-weight: bold;">Variação (%)</th>
                                             </tr>
                                         </thead>
                                         <tbody id="table-despesa-comparativo"></tbody>
@@ -241,10 +264,22 @@
                                     <table class="table table-sm table-mini table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>Principais Planos<br>Orçamentários</th>
-                                                <th>Autorizado<br>(2025)</th>
-                                                <th>Autorizado<br>(2026)</th>
-                                                <th>Variação (%)</th>
+                                                <th rowspan="2" style="vertical-align: middle;">PO</th>
+                                                <th colspan="5" class="text-center table-active">2025</th>
+                                                <th colspan="5" class="text-center text-white"
+                                                    style="background: #1e3a8a;">2026</th>
+                                            </tr>
+                                            <tr>
+                                                <th style="font-size: 8px;">Orçado</th>
+                                                <th style="font-size: 8px;">Autorizado</th>
+                                                <th style="font-size: 8px;">Empenhado</th>
+                                                <th style="font-size: 8px;">Liquidado</th>
+                                                <th style="font-size: 8px; font-weight: bold;">Variação (%)</th>
+                                                <th style="font-size: 8px;">Orçado</th>
+                                                <th style="font-size: 8px;">Autorizado</th>
+                                                <th style="font-size: 8px;">Empenhado</th>
+                                                <th style="font-size: 8px;">Liquidado</th>
+                                                <th style="font-size: 8px; font-weight: bold;">Variação (%)</th>
                                             </tr>
                                         </thead>
                                         <tbody id="table-po-detalhado"></tbody>
@@ -263,23 +298,89 @@
         <div class="modal-dialog modal-xl">
             <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
                 <div class="modal-body p-4">
-                    <h5 class="mb-4 fw-bold">Configuração de Relatório</h5>
-                    <div class="row g-3">
-                        <div class="col-md-4"><label class="filter-label mb-2 d-block">Exercício
-                                Financeiro</label><select id="filter-ano" class="form-select custom-select-filter">
-                                <option value="2026">2026</option>
-                            </select></div>
-                        <div class="col-md-4"><label class="filter-label mb-2 d-block">Período Mensal</label><select
-                                id="filter-mes" class="form-select custom-select-filter" multiple size="1">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0">Filtro</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="row g-4">
+                        <!-- Primeira Linha -->
+                        <div class="col-md-3">
+                            <label class="filter-label mb-2 d-block">Ano</label>
+                            <select id="filter-ano" class="form-select custom-select-filter" multiple size="1">
+                                <option value="2026" selected>2026</option>
+                                <option value="2025">2025</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="filter-label mb-2 d-block">Mês</label>
+                            <select id="filter-mes" class="form-select custom-select-filter" multiple size="1">
                                 <option value="Janeiro">Janeiro</option>
                                 <option value="Fevereiro">Fevereiro</option>
-                            </select></div>
-                        <div class="col-md-4"><label class="filter-label mb-2 d-block">Unidade
-                                Orçamentária</label><select id="filter-uo" class="form-select custom-select-filter"
-                                multiple size="1">
-                                <option value="SEC. SAÚDE">SEC. SAÚDE</option>
-                                <option value="SEC. EDUCAÇÃO">SEC. EDUCAÇÃO</option>
-                            </select></div>
+                                <option value="Março">Março</option>
+                                <option value="Abril">Abril</option>
+                                <option value="Maio">Maio</option>
+                                <option value="Junho">Junho</option>
+                                <option value="Julho">Julho</option>
+                                <option value="Agosto">Agosto</option>
+                                <option value="Setembro">Setembro</option>
+                                <option value="Outubro">Outubro</option>
+                                <option value="Novembro">Novembro</option>
+                                <option value="Dezembro">Dezembro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="filter-label mb-2 d-block">Unidade Orçamentária</label>
+                            <select id="filter-uo" class="form-select custom-select-filter" multiple size="1">
+                                <option value="Todas">Todas as Unidades</option>
+                                <option value="2601 - SEC. EDUCAÇÃO">2601 - SEC. EDUCAÇÃO</option>
+                                <option value="2301 - SEC. SAÚDE">2301 - SEC. SAÚDE</option>
+                                <option value="2401 - SEC. SEGURANÇA">2401 - SEC. SEGURANÇA</option>
+                            </select>
+                        </div>
+
+                        <!-- Segunda Linha -->
+                        <div class="col-md-4">
+                            <label class="filter-label mb-2 d-block">Tipo de Fonte</label>
+                            <select id="filter-tipo-fonte" class="form-select custom-select-filter" multiple size="1">
+                                <option value="Todos">Todos</option>
+                                <option value="Caixa">Caixa</option>
+                                <option value="Demais Fontes">Demais Fontes</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="filter-label mb-2 d-block">Grupo de Despesa</label>
+                            <select id="filter-gd" class="form-select custom-select-filter" multiple size="1">
+                                <option value="1">1 - PESSOAL E ENCARGOS SOCIAIS</option>
+                                <option value="2">2 - JUROS E ENCARGOS DA DÍVIDA</option>
+                                <option value="3">3 - OUTRAS DESPESAS CORRENTES</option>
+                                <option value="4">4 - INVESTIMENTOS</option>
+                                <option value="5">5 - INVERSÕES FINANCEIRAS</option>
+                                <option value="6">6 - AMORTIZAÇÃO DA DÍVIDA</option>
+                                <option value="9">9 - RESERVA DE CONTINGÊNCIA</option>
+                            </select>
+                        </div>
+
+                        <!-- Terceira Linha -->
+                        <div class="col-md-6">
+                            <label class="filter-label mb-2 d-block">Fonte Completa</label>
+                            <input type="text" id="filter-fonte-completa" class="form-control custom-select-filter"
+                                placeholder="Ex: 01000000...">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="filter-label mb-2 d-block">Emenda Parlamentar Estadual</label>
+                            <select id="filter-emenda" class="form-select custom-select-filter" multiple size="1">
+                                <option value="Todos">Todas as despesas</option>
+                                <option value="SEM EMENDA ESTADUAL">SEM EMENDA ESTADUAL (E0000)</option>
+                                <option value="APENAS EMENDA ESTADUAL">APENAS EMENDA ESTADUAL (≠ E0000)</option>
+                            </select>
+                        </div>
+
+                        <!-- Quarta Linha -->
+                        <div class="col-md-12">
+                            <label class="filter-label mb-2 d-block">Ação Orçamentária</label>
+                            <input type="text" id="filter-acao" class="form-control custom-select-filter"
+                                placeholder="Buscar Ação Orçamentária por código ou nome...">
+                        </div>
                     </div>
                     <div class="d-flex justify-content-end mt-4 gap-3"><button id="btn-restaurar"
                             class="btn btn-restaurar">LIMPAR</button><button id="btn-filtrar" class="btn btn-filtrar"

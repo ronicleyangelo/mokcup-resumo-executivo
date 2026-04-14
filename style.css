@@ -22,7 +22,6 @@ body {
     display: flex;
     height: 90px;
     overflow: hidden;
-    border-radius: 12px;
 }
 
 .number-box {
@@ -47,14 +46,36 @@ body {
 }
 
 /* Cores dos Blocos com Gradientes Sutis */
-.number-box.prevista { background: linear-gradient(135deg, #56c0d8, #48a6bb); }
-.number-box.realizada { background: linear-gradient(135deg, #ef8b9c, #d97a8a); }
-.number-box.realizada-prevista { background: linear-gradient(135deg, #56a380, #468c6a); }
-.number-box.empenhada-autorizada { background: linear-gradient(135deg, #56c0d8, #48a6bb); }
-.number-box.liquidada-autorizada { background: linear-gradient(135deg, #ef8b9c, #d97a8a); }
+.number-box.prevista {
+    background: linear-gradient(135deg, #56c0d8, #48a6bb);
+}
 
-.currency { font-size: 0.7rem; opacity: 0.8; margin-bottom: -5px; }
-.value { font-size: 1.2rem; font-weight: 800; }
+.number-box.realizada {
+    background: linear-gradient(135deg, #ef8b9c, #d97a8a);
+}
+
+.number-box.realizada-prevista {
+    background: linear-gradient(135deg, #56a380, #468c6a);
+}
+
+.number-box.empenhada-autorizada {
+    background: linear-gradient(135deg, #56c0d8, #48a6bb);
+}
+
+.number-box.liquidada-autorizada {
+    background: linear-gradient(135deg, #ef8b9c, #d97a8a);
+}
+
+.currency {
+    font-size: 0.7rem;
+    opacity: 0.8;
+    margin-bottom: -5px;
+}
+
+.value {
+    font-size: 1.2rem;
+    font-weight: 800;
+}
 
 .icon-top-right {
     position: absolute;
@@ -96,50 +117,184 @@ body {
     transition: 0.2s;
 }
 
-.tools i:hover { color: var(--primary-blue); transform: translateY(-1px); }
+.tools i:hover {
+    color: var(--primary-blue);
+    transform: translateY(-1px);
+}
 
 /* Flip Animation */
-.flip-card { perspective: 1000px; flex-grow: 1; }
-.flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
-.flipped .flip-card-inner { transform: rotateY(180deg); }
-.flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; }
-.flip-card-back { transform: rotateY(180deg); background: white; border-radius: 0 0 16px 16px; overflow: hidden; }
+.flip-card {
+    perspective: 1000px;
+    flex-grow: 1;
+}
 
-/* Tabela Personalizada */
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+}
+
+.flipped .flip-card-inner {
+    transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+}
+
+.flip-card-back {
+    transform: rotateY(180deg);
+    background: white;
+    border-radius: 0 0 16px 16px;
+    overflow: hidden;
+}
+
+/* Tabela Personalizada - Polimento Geral e Responsividade */
 .scroll-table {
     width: 100%;
     overflow-x: auto;
     overflow-y: auto;
-    max-height: 270px;
-    border: 1px solid #f1f5f9;
-    border-radius: 8px;
+    max-height: 280px;
+    border: 1px solid #eef2f6;
+    border-radius: 10px;
     margin-top: 5px;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f8fafc;
 }
 
-.table-mini { font-size: 0.62rem; border-collapse: separate; border-spacing: 0; min-width: 550px; width: 100%; }
-.table-mini thead th { 
-    background: #ffffff; 
-    color: #1e293b; 
-    text-transform: none; 
-    padding: 12px 8px; 
-    border-bottom: 2px solid #f1f5f9; 
-    border-right: 1px solid #f1f5f9;
-    position: sticky; 
-    top: 0; 
-    z-index: 10; 
-    font-weight: 800;
-    line-height: 1.2;
-    text-align: center;
-    color: #0f172a;
+/* Scrollbar Moderno e Visível */
+.scroll-table::-webkit-scrollbar {
+    width: 8px;
+    height: 10px;
 }
-.table-mini thead th:last-child { border-right: none; }
-.table-mini tbody td { padding: 10px; border-bottom: 1px solid #f1f5f9; border-right: 1px solid #f1f5f9; vertical-align: middle; text-align: center; }
-.table-mini tbody td:first-child { text-align: left; font-weight: 600; color: #1e3a8a; }
-.table-mini tbody td:last-child { border-right: none; }
-.row-total { background-color: #f8fafc !important; font-weight: 700; color: #1e293b; }
+
+.scroll-table::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+.scroll-table::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 10px;
+    border: 2px solid #f1f5f9;
+}
+
+.scroll-table::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}
+
+.table-mini {
+    font-size: 0.65rem;
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    min-width: 950px;
+    table-layout: fixed;
+    color: #334155;
+}
+
+/* Definição de largura estrita */
+.table-mini th:nth-child(1),
+.table-mini td:nth-child(1) {
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+}
+
+.table-mini th:not(:first-child),
+.table-mini td:not(:first-child) {
+    width: 85px;
+    min-width: 85px;
+}
+
+.table-mini thead th {
+    background: #ffffff;
+    color: #1e293b;
+    padding: 0 4px;
+    height: 32px;
+    box-shadow: inset -1px -1px 0 #e2e8f0;
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    font-weight: 700;
+    line-height: 32px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Efeito de hover suave nas linhas */
+.table-mini tbody tr:hover td {
+    background-color: #f1f5f9 !important;
+    transition: background 0.2s;
+}
+
+/* Segunda linha de cabeçalho fixa com offset exato */
+.table-mini thead tr:nth-child(2) th {
+    top: 32px;
+    z-index: 29;
+    background: #f8fafc;
+}
+
+/* PO Header Sticky Left */
+.table-mini thead tr:first-child th:first-child {
+    z-index: 40;
+    left: 0;
+    background: #fff;
+    box-shadow: inset -1px -2px 0 #e2e8f0;
+}
+
+.table-mini tbody td {
+    padding: 6px 4px;
+    box-shadow: inset -1px -1px 0 #f1f5f9;
+    vertical-align: middle;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background: #fff;
+}
+
+.table-mini tbody td:first-child {
+    text-align: left;
+    font-weight: 600;
+    color: #1e3a8a;
+    position: sticky;
+    left: 0;
+    background: #fff;
+    z-index: 21;
+    box-shadow: inset -1px -1px 0 #f1f5f9;
+}
+
+.row-total {
+    background-color: #f8fafc !important;
+}
+
+.row-total td {
+    font-weight: 800 !important;
+    color: #0f172a !important;
+}
+
+.row-total td:first-child {
+    background: #f8fafc !important;
+}
 
 /* Filtros */
-.filter-container { background: white; border-radius: 12px; box-shadow: var(--card-shadow); border: 1px solid var(--border-color); margin-top: 10px; }
+.filter-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-color);
+    margin-top: 10px;
+}
+
 .filter-tag {
     background: #f1f5f9;
     border-radius: 8px;
@@ -149,21 +304,95 @@ body {
     align-items: center;
     gap: 10px;
 }
-.tag-label { font-size: 0.65rem; color: #94a3b8; font-weight: 700; margin-bottom: -2px; }
-.tag-value { font-size: 0.75rem; color: #1e293b; font-weight: 600; }
 
-.btn-filtrar { background: var(--primary-blue); color: white; border-radius: 8px; font-weight: 600; padding: 10px 24px; border: none; }
-.btn-restaurar { background: #f1f5f9; color: #64748b; border-radius: 8px; font-weight: 600; padding: 10px 24px; border: none; }
+.tag-label {
+    font-size: 0.65rem;
+    color: #94a3b8;
+    font-weight: 700;
+    margin-bottom: -2px;
+}
 
-/* Fullscreen Overlay */
+.tag-value {
+    font-size: 0.75rem;
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.btn-filtrar {
+    background: var(--primary-blue);
+    color: white;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 10px 24px;
+    border: none;
+}
+
+.btn-restaurar {
+    background: #f1f5f9;
+    color: #64748b;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 10px 24px;
+    border: none;
+}
+
+/* Fullscreen Overlay - Centralizado e Imersivo */
 .fullscreen-card {
-    position: fixed; top: 0; left: 0; width: 100vw !important; height: 100vh !important;
-    z-index: 9999; border-radius: 0; margin: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 9999;
+    border-radius: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+}
+
+.fullscreen-card .chart-header-standard {
+    padding: 20px 40px;
+    background: #f8fafc;
+}
+
+.fullscreen-card .flip-card {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    padding: 20px;
+}
+
+.fullscreen-card .flip-card-front,
+.fullscreen-card .flip-card-back {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.fullscreen-card .chart {
+    width: 90% !important;
+    height: 80vh !important;
+}
+
+.fullscreen-card .scroll-table {
+    width: 90%;
+    max-height: 80vh;
+    margin: 0 auto;
 }
 
 @media (max-width: 768px) {
-    .card-chart-standard { height: 350px; }
-    .value { font-size: 1rem; }
+    .card-chart-standard {
+        height: 350px;
+    }
+
+    .value {
+        font-size: 1rem;
+    }
 }
 
 /* Tooltip Premium */
@@ -171,7 +400,7 @@ body {
     background: #ffffff;
     border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     padding: 12px;
     font-size: 0.8rem;
     min-width: 220px;
@@ -232,4 +461,53 @@ body {
     color: #1e293b;
     font-family: 'Outfit', sans-serif;
     font-weight: 600;
+}
+
+/* --- Novos Filtros Premium --- */
+.custom-select-filter {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    color: #475569;
+    background-color: #fbfcfd;
+    transition: all 0.2s ease;
+    height: 48px !important;
+    font-weight: 500;
+}
+
+.custom-select-filter:focus {
+    border-color: #56c0d8;
+    box-shadow: 0 0 0 3px rgba(86, 192, 216, 0.1);
+    background-color: white;
+    outline: none;
+}
+
+/* Melhorar aparência de multiselect nativo */
+select[multiple].custom-select-filter {
+    height: auto !important;
+    min-height: 48px;
+    padding: 8px 12px;
+}
+
+.filter-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #334155;
+    letter-spacing: -0.01em;
+}
+
+.modal-content {
+    border-radius: 20px !important;
+    overflow: hidden;
+}
+
+.variation-up {
+    color: #10b981;
+    font-weight: bold;
+}
+
+.variation-down {
+    color: #ef4444;
+    font-weight: bold;
 }
