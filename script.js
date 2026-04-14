@@ -37,6 +37,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const fmtFull = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 });
     const fV = (v) => v.toFixed(2) + " B";
     const popTab = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+    // --- Shared Premium Tooltip ---
+    const buildTooltip = (title, subtitle, series, w, dataPointIndex) => {
+        let rowsHtml = '';
+        series.forEach((sVal, i) => {
+            const seriesName = w.globals.seriesNames[i];
+            const color = w.config.colors[i];
+            const val = sVal[dataPointIndex];
+            const formattedVal = val > 100 ? fmtFull(val * 1e9) : (val.toFixed(1) + "%");
+            rowsHtml += `<div class="tooltip-row active"><span class="dot" style="background:${color}"></span><span class="label">${seriesName}</span><span class="val">${formattedVal}</span></div>`;
+        });
+        return `<div class="premium-tooltip"><div class="tooltip-header"><div class="uo-info">${title}</div><div class="exercise-info">${subtitle}</div></div><div class="tooltip-body">${rowsHtml}</div></div>`;
+    };
 
     // --- Charts (Only 2026) ---
 
@@ -46,21 +58,18 @@ document.addEventListener('DOMContentLoaded', function () {
         chart: { type: 'bar', height: '100%', toolbar: { show: false } },
         colors: ['#56c0d8', '#ef8b9c', '#56a380', '#a372c4'],
         plotOptions: { bar: { borderRadius: 0, horizontal: false, distributed: true, dataLabels: { position: 'top' } } },
-        dataLabels: { enabled: true, formatter: (val) => "R$ " + val + " B", offsetY: -25, style: { fontSize: '11px', colors: ["#666"] } },
-        xaxis: { categories: dispoData.categories, labels: { style: { fontSize: '9px', fontWeight: 600 } } },
+        dataLabels: { enabled: false },
+        xaxis: {
+            categories: dispoData.categories,
+            labels: { rotate: 0, trim: true, style: { fontSize: '9px', fontWeight: 600 } }
+        },
         yaxis: { show: true, labels: { formatter: (val) => "R$ " + val + " B" } },
         grid: { show: true, borderColor: '#f1f1f1' },
+        legend: { show: true, position: 'bottom', markers: { radius: 4 } },
         tooltip: {
             custom: function ({ series, dataPointIndex, w }) {
-                const labels = w.globals.labels;
-                const vals = series[0];
-                let rowsHtml = '';
-                labels.forEach((label, i) => {
-                    const color = w.config.colors[i];
-                    const fullVal = vals[i] * 1000000000;
-                    rowsHtml += `<div class="tooltip-row ${i === dataPointIndex ? 'active' : ''}"><span class="dot" style="background:${color}"></span><span class="label">${label}</span><span class="val">${fmtFull(fullVal)}</span></div>`;
-                });
-                return `<div class="premium-tooltip"><div class="tooltip-header"><div class="uo-info">UO: 2601 - SEDUC</div><div class="exercise-info">Exercício: 2026</div></div><div class="tooltip-body">${rowsHtml}</div></div>`;
+                const label = w.globals.labels[dataPointIndex];
+                return buildTooltip(label, "Exercício 2026", series, w, dataPointIndex);
             }
         }
     }).render();
@@ -68,30 +77,23 @@ document.addEventListener('DOMContentLoaded', function () {
     // 2. Sucesso Planejamento
     new ApexCharts(document.querySelector("#chart-sucesso"), {
         series: [
-            { name: 'Empenhado (2026)', data: [95.1, 88.0, 92.4, 83.2, 76.0, 100.0] },
-            { name: 'Liquidado (2026)', data: [57.7, 82.4, 70.1, 31.7, 45.2, 98.0] }
+            { name: 'Empenhado', data: [95.1, 88.0, 92.4, 83.2, 76.0, 100.0] },
+            { name: 'Liquidado', data: [57.7, 82.4, 70.1, 31.7, 45.2, 98.0] }
         ],
         chart: { type: 'bar', height: '100%', toolbar: { show: false } },
         colors: ['#56c0d8', '#ef8b9c'],
         plotOptions: { bar: { borderRadius: 0, columnWidth: '70%', dataLabels: { position: 'top' } } },
-        dataLabels: { enabled: true, formatter: (val) => val + "%", offsetY: -20, style: { fontSize: '11px', colors: ["#666"] } },
-        xaxis: { categories: expenseGroups.slice(0, 6), labels: { style: { fontSize: '9px', fontWeight: 600 } } },
+        dataLabels: { enabled: false },
+        xaxis: {
+            categories: expenseGroups.slice(0, 6),
+            labels: { rotate: 0, trim: true, style: { fontSize: '9px', fontWeight: 600 } }
+        },
         yaxis: { max: 100, labels: { style: { fontSize: '9px' }, formatter: (val) => val + "%" } },
-        legend: { position: 'bottom' },
+        legend: { position: 'bottom', markers: { radius: 4 } },
         tooltip: {
-            y: {
-                formatter: function (val, { series, seriesIndex, dataPointIndex, w }) {
-                    const group = expenseGroups[dataPointIndex];
-                    const row = sucessTableData.find(r => r.ano === 2026 && r.grupo === group);
-                    if (row) {
-                        const absValStr = seriesIndex === 0 ? row.emp : row.liq;
-                        const num = parseFloat(absValStr.replace(' B', '').replace(',', '.'));
-                        const fullVal = num * 1000000000;
-                        const label = seriesIndex === 0 ? 'Empenhado' : 'Liquidado';
-                        return `${val}% (${label}: ${fmtFull(fullVal)})`;
-                    }
-                    return val + "%";
-                }
+            custom: function ({ series, dataPointIndex, w }) {
+                const group = expenseGroups[dataPointIndex];
+                return buildTooltip(group, "Eficiência de Execução 2026", series, w, dataPointIndex);
             }
         }
     }).render();
@@ -116,34 +118,22 @@ document.addEventListener('DOMContentLoaded', function () {
         ],
         chart: { type: 'bar', height: '100%', toolbar: { show: false } },
         colors: ['#56c0d8', '#ef8b9c'],
-        plotOptions: {
-            bar: {
-                borderRadius: 2,
-                columnWidth: '70%',
-                dataLabels: { position: 'top' }
-            }
-        },
-        dataLabels: {
-            enabled: true,
-            formatter: (val) => val > 0 ? "R$ " + val.toFixed(1) + " B" : "",
-            offsetY: -20,
-            style: { fontSize: '9px', colors: ["#475569"] }
-        },
+        plotOptions: { bar: { borderRadius: 0, columnWidth: '70%', dataLabels: { position: 'top' } } },
+        dataLabels: { enabled: false },
         xaxis: {
             categories: compData.map(d => d.g),
-            labels: { rotate: -45, style: { fontSize: '9px', fontWeight: 600 } }
+            labels: { rotate: 0, trim: true, style: { fontSize: '9px', fontWeight: 600 } }
         },
         yaxis: {
             show: true,
             labels: { style: { fontSize: '9px' }, formatter: (val) => "R$ " + val + " B" }
         },
         grid: { show: true, borderColor: '#f1f1f1', strokeDashArray: 4 },
-        legend: { position: 'bottom', horizontalAlign: 'center', offsetY: 0 },
+        legend: { position: 'bottom', horizontalAlign: 'center', offsetY: 0, markers: { radius: 4 } },
         tooltip: {
-            y: {
-                formatter: function (val) {
-                    return fmtFull(val * 1000000000);
-                }
+            custom: function ({ series, dataPointIndex, w }) {
+                const group = compData[dataPointIndex].g;
+                return buildTooltip(group, "Comparativo Realizado", series, w, dataPointIndex);
             }
         }
     }).render();
@@ -161,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
             bar: {
                 horizontal: true,
                 barHeight: '85%',
-                borderRadius: 2,
+                borderRadius: 0,
                 dataLabels: { position: 'top' }
             }
         },
@@ -172,14 +162,11 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         yaxis: { labels: { style: { fontSize: '9px', fontWeight: 600 } } },
         grid: { borderColor: '#f1f1f1', strokeDashArray: 4, xaxis: { lines: { show: true } } },
-        legend: { position: 'bottom', horizontalAlign: 'center', fontSize: '11px' },
+        legend: { position: 'bottom', horizontalAlign: 'center', fontSize: '11px', markers: { radius: 4 } },
         tooltip: {
-            shared: true,
-            intersect: false,
-            y: {
-                formatter: function (val) {
-                    return fmtFull(val * 1e9);
-                }
+            custom: function ({ series, dataPointIndex, w }) {
+                const poName = poList[dataPointIndex].po;
+                return buildTooltip(poName, "Plano Orçamentário 2026", series, w, dataPointIndex);
             }
         }
     }).render();
@@ -204,22 +191,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Total First
     tablePoHtml += `<tr class="row-total">
-        <td>TOTAL</td>
-        <td>${fB(t_o25)}</td><td>${fB(t_a25)}</td><td>${fB(t_e25)}</td><td>${fB(t_l25)}</td>
-        <td>${v25T}%</td>
-        <td style="background:rgba(30,58,138,0.05);">${fB(t_o26)}</td><td style="background:rgba(30,58,138,0.05);">${fB(t_a26)}</td><td style="background:rgba(30,58,138,0.05);">${fB(t_e26)}</td><td style="background:rgba(30,58,138,0.05);">${fB(t_l26)}</td>
-        <td style="background:rgba(30,58,138,0.05);">${v26T}%</td>
+        <td title="Valor Total Acumulado">TOTAL</td>
+        <td title="${fmtFull(t_o25)}">${fB(t_o25)}</td>
+        <td title="${fmtFull(t_a25)}">${fB(t_a25)}</td>
+        <td title="${fmtFull(t_e25)}">${fB(t_e25)}</td>
+        <td title="${fmtFull(t_l25)}">${fB(t_l25)}</td>
+        <td title="Variação Percentual: ${v25T}%">${v25T}%</td>
+        <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(t_o26)}">${fB(t_o26)}</td>
+        <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(t_a26)}">${fB(t_a26)}</td>
+        <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(t_e26)}">${fB(t_e26)}</td>
+        <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(t_l26)}">${fB(t_l26)}</td>
+        <td style="background:rgba(30,58,138,0.05);" title="Variação Percentual: ${v26T}%">${v26T}%</td>
     </tr>`;
 
     poDataDetailed.forEach(d => {
         const v25 = calcVar(d.l25, d.l24);
         const v26 = calcVar(d.l26, d.l25);
         tablePoHtml += `<tr>
-            <td style="text-align:left; font-weight:600;">${d.po}</td>
-            <td style="font-size:9px;">${getF(d.o25)}</td><td style="font-size:9px;">${getF(d.a25)}</td><td style="font-size:9px;">${getF(d.e25)}</td><td style="font-size:9px; background:#f8fafc;">${getF(d.l25)}</td>
-            <td style="font-weight:bold;">${v25}%</td>
-            <td style="font-size:9px;">${getF(d.o26)}</td><td style="font-size:9px;">${getF(d.a26)}</td><td style="font-size:9px;">${getF(d.e26)}</td><td style="font-size:9px; background:rgba(30,58,138,0.05); font-weight:bold; color:#1e3a8a;">${getF(d.l26)}</td>
-            <td style="font-weight:bold; background:rgba(30,58,138,0.05);">${v26}%</td>
+            <td style="text-align:left; font-weight:600;" title="${d.po}">${d.po}</td>
+            <td style="font-size:9px;" title="${fmtFull(d.o25)}">${getF(d.o25)}</td>
+            <td style="font-size:9px;" title="${fmtFull(d.a25)}">${getF(d.a25)}</td>
+            <td style="font-size:9px;" title="${fmtFull(d.e25)}">${getF(d.e25)}</td>
+            <td style="font-size:9px; background:#f8fafc;" title="${fmtFull(d.l25)}">${getF(d.l25)}</td>
+            <td style="font-weight:bold;" title="Variação: ${v25}%">${v25}%</td>
+            <td style="font-size:9px;" title="${fmtFull(d.o26)}">${getF(d.o26)}</td>
+            <td style="font-size:9px;" title="${fmtFull(d.a26)}">${getF(d.a26)}</td>
+            <td style="font-size:9px;" title="${fmtFull(d.e26)}">${getF(d.e26)}</td>
+            <td style="font-size:9px; background:rgba(30,58,138,0.05); font-weight:bold; color:#1e3a8a;" title="${fmtFull(d.l26)}">${getF(d.l26)}</td>
+            <td style="font-weight:bold; background:rgba(30,58,138,0.05);" title="Variação: ${v26}%">${v26}%</td>
         </tr>`;
     });
     popTab('table-po-detalhado', tablePoHtml);
@@ -247,19 +246,35 @@ document.addEventListener('DOMContentLoaded', function () {
         st.a26 += pS(d.a26); st.e26 += pS(d.e26); st.l26 += pS(d.l26);
     });
 
+    const pFull = (v) => fmtFull(pS(v) * 1e9);
+
     tableSucessoHtml += `<tr class="row-total">
-        <td>TOTAL</td>
-        <td>${st.a25.toFixed(2)} B</td><td>${st.e25.toFixed(2)} B</td><td>${st.l25.toFixed(2)} B</td>
-        <td>${((st.e25/st.a25)*100).toFixed(1)}%</td><td>${((st.l25/st.a25)*100).toFixed(1)}%</td>
-        <td>${st.a26.toFixed(2)} B</td><td>${st.e26.toFixed(2)} B</td><td>${st.l26.toFixed(2)} B</td>
-        <td>${((st.e26/st.a26)*100).toFixed(1)}%</td><td>${((st.l26/st.a26)*100).toFixed(1)}%</td>
+        <td title="Valores Totais">TOTAL</td>
+        <td title="${fmtFull(st.a25 * 1e9)}">${st.a25.toFixed(2)} B</td>
+        <td title="${fmtFull(st.e25 * 1e9)}">${st.e25.toFixed(2)} B</td>
+        <td title="${fmtFull(st.l25 * 1e9)}">${st.l25.toFixed(2)} B</td>
+        <td title="Eficiência Empenho: ${((st.e25 / st.a25) * 100).toFixed(1)}%">${((st.e25 / st.a25) * 100).toFixed(1)}%</td>
+        <td title="Eficiência Liquidação: ${((st.l25 / st.a25) * 100).toFixed(1)}%">${((st.l25 / st.a25) * 100).toFixed(1)}%</td>
+        <td title="${fmtFull(st.a26 * 1e9)}">${st.a26.toFixed(2)} B</td>
+        <td title="${fmtFull(st.e26 * 1e9)}">${st.e26.toFixed(2)} B</td>
+        <td title="${fmtFull(st.l26 * 1e9)}">${st.l26.toFixed(2)} B</td>
+        <td title="Eficiência Empenho: ${((st.e26 / st.a26) * 100).toFixed(1)}%">${((st.e26 / st.a26) * 100).toFixed(1)}%</td>
+        <td title="Eficiência Liquidação: ${((st.l26 / st.a26) * 100).toFixed(1)}%">${((st.l26 / st.a26) * 100).toFixed(1)}%</td>
     </tr>`;
 
     sData.forEach(d => {
         tableSucessoHtml += `<tr>
-            <td style="text-align:left; font-weight:600;">${d.g}</td>
-            <td style="font-size:9px;">${d.a25}</td><td style="font-size:9px;">${d.e25}</td><td style="font-size:9px;">${d.l25}</td><td style="font-size:9px;">${pC(d.e25, d.a25)}</td><td style="font-size:9px;">${pC(d.l25, d.a25)}</td>
-            <td style="font-size:9px;">${d.a26}</td><td style="font-size:9px;">${d.e26}</td><td style="font-size:9px;">${d.l26}</td><td style="font-size:9px; font-weight:bold;">${pC(d.e26, d.a26)}</td><td style="font-size:9px; font-weight:bold;">${pC(d.l26, d.a26)}</td>
+            <td style="text-align:left; font-weight:600;" title="${d.g}">${d.g}</td>
+            <td style="font-size:9px;" title="${pFull(d.a25)}">${d.a25}</td>
+            <td style="font-size:9px;" title="${pFull(d.e25)}">${d.e25}</td>
+            <td style="font-size:9px;" title="${pFull(d.l25)}">${d.l25}</td>
+            <td style="font-size:9px;" title="Eficiência: ${pC(d.e25, d.a25)}">${pC(d.e25, d.a25)}</td>
+            <td style="font-size:9px;" title="Eficiência: ${pC(d.l25, d.a25)}">${pC(d.l25, d.a25)}</td>
+            <td style="font-size:9px;" title="${pFull(d.a26)}">${d.a26}</td>
+            <td style="font-size:9px;" title="${pFull(d.e26)}">${d.e26}</td>
+            <td style="font-size:9px;" title="${pFull(d.l26)}">${d.l26}</td>
+            <td style="font-size:9px; font-weight:bold;" title="Eficiência: ${pC(d.e26, d.a26)}">${pC(d.e26, d.a26)}</td>
+            <td style="font-size:9px; font-weight:bold;" title="Eficiência: ${pC(d.l26, d.a26)}">${pC(d.l26, d.a26)}</td>
         </tr>`;
     });
     popTab('table-sucesso-detalhado', tableSucessoHtml);
@@ -276,34 +291,43 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Total Row
     compHtml += `<tr class="row-total">
-        <td>TOTAL</td>
-        <td>${fV(tc.o25)}</td><td>${fV(tc.a25)}</td><td>${fV(tc.e25)}</td><td>${fV(tc.l25)}</td>
-        <td>${v25TC}%</td>
-        <td style="background:rgba(30,58,138,0.05);">${fV(tc.o26)}</td><td style="background:rgba(30,58,138,0.05);">${fV(tc.a26)}</td><td style="background:rgba(30,58,138,0.05);">${fV(tc.e26)}</td><td style="background:rgba(30,58,138,0.05); color:#1e3a8a;">${fV(tc.l26)}</td>
-        <td style="background:rgba(30,58,138,0.05);">${v26TC}%</td>
+        <td title="Somas Totais">TOTAL</td>
+        <td title="${fmtFull(tc.o25 * 1e9)}">${fV(tc.o25)}</td>
+        <td title="${fmtFull(tc.a25 * 1e9)}">${fV(tc.a25)}</td>
+        <td title="${fmtFull(tc.e25 * 1e9)}">${fV(tc.e25)}</td>
+        <td title="${fmtFull(tc.l25 * 1e9)}">${fV(tc.l25)}</td>
+        <td title="Variação Geral: ${v25TC}%">${v25TC}%</td>
+        <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(tc.o26 * 1e9)}">${fV(tc.o26)}</td>
+        <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(tc.a26 * 1e9)}">${fV(tc.a26)}</td>
+        <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(tc.e26 * 1e9)}">${fV(tc.e26)}</td>
+        <td style="background:rgba(30,58,138,0.05); color:#1e3a8a;" title="${fmtFull(tc.l26 * 1e9)}">${fV(tc.l26)}</td>
+        <td style="background:rgba(30,58,138,0.05);" title="Variação Geral: ${v26TC}%">${v26TC}%</td>
     </tr>`;
 
     compData.forEach(d => {
         const v25 = calcVar(d.l25, (d.l25 * 0.9)); // Mocked 2024
         const v26 = calcVar(d.l26, d.l25);
         compHtml += `<tr>
-            <td style="text-align:left; font-weight:600;">${d.g}</td>
-            <td style="font-size:9px;">${fV(d.o25)}</td>
-            <td style="font-size:9px;">${fV(d.a25)}</td>
-            <td style="font-size:9px;">${fV(d.e25)}</td>
-            <td style="font-size:9px; background:#f8fafc;">${fV(d.l25)}</td>
-            <td style="font-weight:bold;">${v25}%</td>
-            <td style="font-size:9px;">${fV(d.o26)}</td>
-            <td style="font-size:9px;">${fV(d.a26)}</td>
-            <td style="font-size:9px;">${fV(d.e26)}</td>
-            <td style="font-size:9px; background:rgba(30,58,138,0.05); font-weight:bold; color:#1e3a8a;">${fV(d.l26)}</td>
-            <td style="font-weight:bold; background:rgba(30,58,138,0.05);">${v26}%</td>
+            <td style="text-align:left; font-weight:600;" title="${d.g}">${d.g}</td>
+            <td style="font-size:9px;" title="${fmtFull(d.o25 * 1e9)}">${fV(d.o25)}</td>
+            <td style="font-size:9px;" title="${fmtFull(d.a25 * 1e9)}">${fV(d.a25)}</td>
+            <td style="font-size:9px;" title="${fmtFull(d.e25 * 1e9)}">${fV(d.e25)}</td>
+            <td style="font-size:9px; background:#f8fafc;" title="${fmtFull(d.l25 * 1e9)}">${fV(d.l25)}</td>
+            <td style="font-weight:bold;" title="Variação: ${v25}%">${v25}%</td>
+            <td style="font-size:9px;" title="${fmtFull(d.o26 * 1e9)}">${fV(d.o26)}</td>
+            <td style="font-size:9px;" title="${fmtFull(d.a26 * 1e9)}">${fV(d.a26)}</td>
+            <td style="font-size:9px;" title="${fmtFull(d.e26 * 1e9)}">${fV(d.e26)}</td>
+            <td style="font-size:9px; background:rgba(30,58,138,0.05); font-weight:bold; color:#1e3a8a;" title="${fmtFull(d.l26 * 1e9)}">${fV(d.l26)}</td>
+            <td style="font-weight:bold; background:rgba(30,58,138,0.05);" title="Variação: ${v26}%">${v26}%</td>
         </tr>`;
     });
     popTab('table-despesa-comparativo', compHtml);
 
     // D. Disponibilidade Table
-    popTab('table-dispo', dispoData.categories.map((cat, i) => `<tr><td style="text-align:left;">${cat}</td><td class="text-end fw-bold">R$ ${dispoData.values[i]} B</td></tr>`).join(''));
+    popTab('table-dispo', dispoData.categories.map((cat, i) => {
+        const fullVal = dispoData.values[i] * 1e9;
+        return `<tr><td style="text-align:left;" title="${cat}">${cat}</td><td class="text-end fw-bold" title="${fmtFull(fullVal)}">R$ ${dispoData.values[i]} B</td></tr>`;
+    }).join(''));
 
     // --- Handlers ---
     document.querySelectorAll('.flip-trigger').forEach(btn => { btn.onclick = function () { const card = this.closest('.card-chart-standard').querySelector('.flip-card'); if (card) card.classList.toggle('flipped'); }; });
@@ -328,23 +352,23 @@ document.addEventListener('DOMContentLoaded', function () {
             const el = filterRefs[key]; if (!el) return;
             let val = '';
             if (el.tagName === 'SELECT') {
-                const selected = Array.from(el.selectedOptions).map(opt => opt.value);
-                if (selected.length > 0 && selected[0] !== '' && selected[0] !== 'Todos' && selected[0] !== 'Todas') val = selected.join('; ');
+                const validSelected = Array.from(el.selectedOptions).map(opt => opt.value).filter(v => v !== '' && v !== 'Todos' && v !== 'Todas' && !v.includes('0 selecionados') && !v.includes('3 selecionados'));
+                if (validSelected.length > 0) val = validSelected.join('; ');
             } else {
                 val = el.value.trim();
             }
 
             if (val) {
                 const chip = document.createElement('div'); chip.className = 'filter-tag';
-                let label = key.toUpperCase();
-                if (key === 'mes') label = 'PERÍODO MENSAL';
-                if (key === 'uo') label = 'UNIDADE ORÇAMENTÁRIA';
-                if (key === 'ano') label = 'ANO';
-                if (key === 'tipoFonte') label = 'TIPO DE FONTE';
-                if (key === 'gd') label = 'GRUPO DE DESPESA';
-                if (key === 'fonteCompleta') label = 'FONTE COMPLETA';
-                if (key === 'emenda') label = 'EMENDA PARLAMENTAR';
-                if (key === 'acao') label = 'AÇÃO ORÇAMENTÁRIA';
+                let label = key;
+                if (key === 'mes') label = 'Mês';
+                if (key === 'uo') label = 'UO';
+                if (key === 'ano') label = 'Ano';
+                if (key === 'tipoFonte') label = 'Fonte';
+                if (key === 'gd') label = 'Grupo de Desp.';
+                if (key === 'fonteCompleta') label = 'Fonte Completa';
+                if (key === 'emenda') label = 'Emenda';
+                if (key === 'acao') label = 'Ação';
 
                 chip.innerHTML = `<div class="d-flex flex-column"><div class="tag-label">${label}:</div><div class="tag-value">${val}</div></div>`;
                 if (key !== 'ano') chip.innerHTML += `<button class="remove-tag" data-key="${key}">X</button>`;

@@ -22,6 +22,7 @@ body {
     display: flex;
     height: 90px;
     overflow: hidden;
+    border-radius: 8px;
 }
 
 .number-box {
@@ -296,30 +297,48 @@ body {
 }
 
 .filter-tag {
-    background: #f1f5f9;
-    border-radius: 8px;
-    padding: 6px 12px;
-    border-left: 4px solid var(--primary-blue);
+    background: #ffffff;
+    border-radius: 50px;
+    padding: 8px 16px;
+    border: 1px solid #cbd5e1;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .tag-label {
     font-size: 0.65rem;
-    color: #94a3b8;
-    font-weight: 700;
-    margin-bottom: -2px;
+    color: #475569;
+    font-weight: 500;
+    margin-bottom: 2px;
 }
 
 .tag-value {
     font-size: 0.75rem;
-    color: #1e293b;
-    font-weight: 600;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.remove-tag {
+    background: transparent;
+    border: none;
+    color: #0284c7;
+    font-weight: 900;
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.remove-tag:hover {
+    color: #0369a1;
 }
 
 .btn-filtrar {
-    background: var(--primary-blue);
+    background: #10b981;
     color: white;
     border-radius: 8px;
     font-weight: 600;
@@ -327,13 +346,21 @@ body {
     border: none;
 }
 
+.btn-filtrar:hover {
+    background: #059669;
+}
+
 .btn-restaurar {
-    background: #f1f5f9;
-    color: #64748b;
+    background: #f59e0b;
+    color: white;
     border-radius: 8px;
     font-weight: 600;
     padding: 10px 24px;
     border: none;
+}
+
+.btn-restaurar:hover {
+    background: #d97706;
 }
 
 /* Fullscreen Overlay - Centralizado e Imersivo */
@@ -359,10 +386,11 @@ body {
 .fullscreen-card .flip-card {
     flex-grow: 1;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     background: #fff;
     padding: 20px;
+    overflow: auto;
 }
 
 .fullscreen-card .flip-card-front,
@@ -375,14 +403,42 @@ body {
 }
 
 .fullscreen-card .chart {
-    width: 90% !important;
-    height: 80vh !important;
+    width: 95% !important;
+    height: 85vh !important;
 }
 
 .fullscreen-card .scroll-table {
-    width: 90%;
-    max-height: 80vh;
+    width: 95%;
+    max-height: 85vh;
     margin: 0 auto;
+}
+
+.fullscreen-card table {
+    width: 100% !important;
+    font-size: 0.85rem !important;
+}
+
+.fullscreen-card table th,
+.fullscreen-card table td {
+    width: auto !important;
+    min-width: 120px !important;
+    padding: 12px 8px !important;
+    font-size: 0.85rem !important;
+}
+
+.fullscreen-card table th:first-child,
+.fullscreen-card table td:first-child {
+    min-width: 250px !important;
+    width: auto !important;
+}
+
+.fullscreen-card thead th {
+    height: 45px !important;
+    line-height: 45px !important;
+}
+
+.fullscreen-card thead tr:nth-child(2) th {
+    top: 45px !important;
 }
 
 @media (max-width: 768px) {
@@ -466,14 +522,17 @@ body {
 /* --- Novos Filtros Premium --- */
 .custom-select-filter {
     border: 1px solid #e2e8f0;
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 10px 14px;
     font-size: 0.9rem;
     color: #475569;
-    background-color: #fbfcfd;
+    background-color: #ffffff;
     transition: all 0.2s ease;
     height: 48px !important;
     font-weight: 500;
+    appearance: none;
+    background-image: none !important;
+    cursor: pointer;
 }
 
 .custom-select-filter:focus {

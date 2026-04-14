@@ -127,11 +127,10 @@
                             </div>
                             <div class="flip-card-back p-4">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h6>Detalhamento de Disponibilidade</h6><i
-                                        class="fas fa-chart-bar flip-trigger text-primary cursor-pointer"></i>
+                                    <h6>Detalhamento de Disponibilidade</h6>
                                 </div>
                                 <div>
-                                    <table class="table table-sm table-hover" style="font-size: 0.75rem;">
+                                    <table class="table table-sm table-mini table-hover">
                                         <thead class="table-light">
                                             <tr>
                                                 <th>Categoria</th>
@@ -161,8 +160,7 @@
                             </div>
                             <div class="flip-card-back p-4">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h6>Comparativo por Exercício</h6><i
-                                        class="fas fa-chart-bar flip-trigger text-primary cursor-pointer"></i>
+                                    <h6>Comparativo por Exercício</h6>
                                 </div>
                                 <div class="scroll-table">
                                     <table class="table table-sm table-mini table-bordered">
@@ -209,8 +207,7 @@
                             </div>
                             <div class="flip-card-back p-4">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h6>Detalhamento por Grupo</h6><i
-                                        class="fas fa-chart-bar flip-trigger text-primary cursor-pointer"></i>
+                                    <h6>Detalhamento por Grupo</h6>
                                 </div>
                                 <div class="scroll-table">
                                     <table class="table table-sm table-mini table-bordered">
@@ -257,8 +254,7 @@
                             </div>
                             <div class="flip-card-back p-4">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h6>Planos Orçamentários</h6><i
-                                        class="fas fa-chart-bar flip-trigger text-primary cursor-pointer"></i>
+                                    <h6>Planos Orçamentários</h6>
                                 </div>
                                 <div class="scroll-table">
                                     <table class="table table-sm table-mini table-bordered">
@@ -314,6 +310,7 @@
                         <div class="col-md-4">
                             <label class="filter-label mb-2 d-block">Mês</label>
                             <select id="filter-mes" class="form-select custom-select-filter" multiple size="1">
+                                <option value="" disabled selected>3 selecionados</option>
                                 <option value="Janeiro">Janeiro</option>
                                 <option value="Fevereiro">Fevereiro</option>
                                 <option value="Março">Março</option>
@@ -331,6 +328,7 @@
                         <div class="col-md-5">
                             <label class="filter-label mb-2 d-block">Unidade Orçamentária</label>
                             <select id="filter-uo" class="form-select custom-select-filter" multiple size="1">
+                                <option value="" disabled selected>0 selecionados</option>
                                 <option value="Todas">Todas as Unidades</option>
                                 <option value="2601 - SEC. EDUCAÇÃO">2601 - SEC. EDUCAÇÃO</option>
                                 <option value="2301 - SEC. SAÚDE">2301 - SEC. SAÚDE</option>
@@ -342,6 +340,7 @@
                         <div class="col-md-4">
                             <label class="filter-label mb-2 d-block">Tipo de Fonte</label>
                             <select id="filter-tipo-fonte" class="form-select custom-select-filter" multiple size="1">
+                                <option value="" disabled selected>0 selecionados</option>
                                 <option value="Todos">Todos</option>
                                 <option value="Caixa">Caixa</option>
                                 <option value="Demais Fontes">Demais Fontes</option>
@@ -350,13 +349,14 @@
                         <div class="col-md-8">
                             <label class="filter-label mb-2 d-block">Grupo de Despesa</label>
                             <select id="filter-gd" class="form-select custom-select-filter" multiple size="1">
-                                <option value="1">1 - PESSOAL E ENCARGOS SOCIAIS</option>
-                                <option value="2">2 - JUROS E ENCARGOS DA DÍVIDA</option>
-                                <option value="3">3 - OUTRAS DESPESAS CORRENTES</option>
-                                <option value="4">4 - INVESTIMENTOS</option>
-                                <option value="5">5 - INVERSÕES FINANCEIRAS</option>
-                                <option value="6">6 - AMORTIZAÇÃO DA DÍVIDA</option>
-                                <option value="9">9 - RESERVA DE CONTINGÊNCIA</option>
+                                <option value="" disabled selected>0 selecionados</option>
+                                <option value="1 - PESSOAL E ENCARGOS SOCIAIS">1 - PESSOAL E ENCARGOS SOCIAIS</option>
+                                <option value="2 - JUROS E ENCARGOS DA DÍVIDA">2 - JUROS E ENCARGOS DA DÍVIDA</option>
+                                <option value="3 - OUTRAS DESPESAS CORRENTES">3 - OUTRAS DESPESAS CORRENTES</option>
+                                <option value="4 - INVESTIMENTOS">4 - INVESTIMENTOS</option>
+                                <option value="5 - INVERSÕES FINANCEIRAS">5 - INVERSÕES FINANCEIRAS</option>
+                                <option value="6 - AMORTIZAÇÃO DA DÍVIDA">6 - AMORTIZAÇÃO DA DÍVIDA</option>
+                                <option value="9 - RESERVA DE CONTINGÊNCIA">9 - RESERVA DE CONTINGÊNCIA</option>
                             </select>
                         </div>
 
@@ -369,6 +369,7 @@
                         <div class="col-md-6">
                             <label class="filter-label mb-2 d-block">Emenda Parlamentar Estadual</label>
                             <select id="filter-emenda" class="form-select custom-select-filter" multiple size="1">
+                                <option value="" disabled selected>0 selecionados</option>
                                 <option value="Todos">Todas as despesas</option>
                                 <option value="SEM EMENDA ESTADUAL">SEM EMENDA ESTADUAL (E0000)</option>
                                 <option value="APENAS EMENDA ESTADUAL">APENAS EMENDA ESTADUAL (≠ E0000)</option>
@@ -383,8 +384,8 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-end mt-4 gap-3"><button id="btn-restaurar"
-                            class="btn btn-restaurar">LIMPAR</button><button id="btn-filtrar" class="btn btn-filtrar"
-                            data-bs-dismiss="modal">APLICAR FILTROS</button></div>
+                            class="btn btn-restaurar">RESTAURAR FILTRO</button><button id="btn-filtrar" class="btn btn-filtrar"
+                            data-bs-dismiss="modal">FILTRAR</button></div>
                 </div>
             </div>
         </div>
