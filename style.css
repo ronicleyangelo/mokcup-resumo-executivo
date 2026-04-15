@@ -530,8 +530,6 @@ body {
     transition: all 0.2s ease;
     height: 48px !important;
     font-weight: 500;
-    appearance: none;
-    background-image: none !important;
     cursor: pointer;
 }
 
@@ -569,4 +567,33 @@ select[multiple].custom-select-filter {
 .variation-down {
     color: #ef4444;
     font-weight: bold;
+}
+
+/* Choices.js Premium Overrides */
+.choices[data-type*="select-multiple"] .choices__inner {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #ffffff;
+    min-height: 48px;
+    padding: 4px 8px;
+}
+
+.choices__inner {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #ffffff;
+    min-height: 48px;
+    font-size: 0.9rem;
+    color: #475569;
+}
+
+.choices__list--multiple .choices__item {
+    background-color: var(--primary-blue);
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.choices[data-type*="select-one"] .choices__input {
+    background-color: transparent;
 }

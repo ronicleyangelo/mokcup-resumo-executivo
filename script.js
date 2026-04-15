@@ -380,7 +380,10 @@ document.addEventListener('DOMContentLoaded', function () {
             btn.onclick = function () {
                 const key = this.getAttribute('data-key');
                 const el = filterRefs[key];
-                if (el.tagName === 'SELECT') {
+                if (el.tagName === 'SELECT' && window.choicesMap && choicesMap.has(el.id)) {
+                    const c = choicesMap.get(el.id);
+                    c.removeActiveItems();
+                } else if (el.tagName === 'SELECT') {
                     if (el.multiple) Array.from(el.options).forEach(opt => opt.selected = false); else el.selectedIndex = 0;
                 } else {
                     el.value = '';
@@ -394,7 +397,14 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('btn-restaurar')?.addEventListener('click', function () {
         Object.keys(filterRefs).forEach(key => {
             const el = filterRefs[key];
-            if (el.tagName === 'SELECT') {
+            if (el.tagName === 'SELECT' && window.choicesMap && choicesMap.has(el.id)) {
+                if (key === 'ano') {
+                    choicesMap.get(el.id).removeActiveItems();
+                    choicesMap.get(el.id).setChoiceByValue('2026');
+                } else {
+                    choicesMap.get(el.id).removeActiveItems();
+                }
+            } else if (el.tagName === 'SELECT') {
                 if (key === 'ano') el.value = '2026';
                 else if (el.multiple) Array.from(el.options).forEach(opt => opt.selected = false);
                 else el.selectedIndex = 0;
@@ -404,5 +414,20 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         updateChips();
     });
+    
+    // Inicializar Choices.js Premium
+    window.choicesMap = new Map();
+    document.querySelectorAll('select.custom-select-filter').forEach(el => {
+        const c = new Choices(el, {
+            removeItemButton: true,
+            searchEnabled: el.multiple,
+            searchPlaceholderValue: "Buscar...",
+            noResultsText: "Nada encontrado",
+            itemSelectText: "",
+            shouldSort: false
+        });
+        choicesMap.set(el.id, c);
+    });
+
     updateChips();
 });

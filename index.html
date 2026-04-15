@@ -10,6 +10,7 @@
         rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -310,7 +311,6 @@
                         <div class="col-md-4">
                             <label class="filter-label mb-2 d-block">Mês</label>
                             <select id="filter-mes" class="form-select custom-select-filter" multiple size="1">
-                                <option value="" disabled selected>3 selecionados</option>
                                 <option value="Janeiro">Janeiro</option>
                                 <option value="Fevereiro">Fevereiro</option>
                                 <option value="Março">Março</option>
@@ -328,8 +328,6 @@
                         <div class="col-md-5">
                             <label class="filter-label mb-2 d-block">Unidade Orçamentária</label>
                             <select id="filter-uo" class="form-select custom-select-filter" multiple size="1">
-                                <option value="" disabled selected>0 selecionados</option>
-                                <option value="Todas">Todas as Unidades</option>
                                 <option value="2601 - SEC. EDUCAÇÃO">2601 - SEC. EDUCAÇÃO</option>
                                 <option value="2301 - SEC. SAÚDE">2301 - SEC. SAÚDE</option>
                                 <option value="2401 - SEC. SEGURANÇA">2401 - SEC. SEGURANÇA</option>
@@ -340,8 +338,6 @@
                         <div class="col-md-4">
                             <label class="filter-label mb-2 d-block">Tipo de Fonte</label>
                             <select id="filter-tipo-fonte" class="form-select custom-select-filter" multiple size="1">
-                                <option value="" disabled selected>0 selecionados</option>
-                                <option value="Todos">Todos</option>
                                 <option value="Caixa">Caixa</option>
                                 <option value="Demais Fontes">Demais Fontes</option>
                             </select>
@@ -349,7 +345,6 @@
                         <div class="col-md-8">
                             <label class="filter-label mb-2 d-block">Grupo de Despesa</label>
                             <select id="filter-gd" class="form-select custom-select-filter" multiple size="1">
-                                <option value="" disabled selected>0 selecionados</option>
                                 <option value="1 - PESSOAL E ENCARGOS SOCIAIS">1 - PESSOAL E ENCARGOS SOCIAIS</option>
                                 <option value="2 - JUROS E ENCARGOS DA DÍVIDA">2 - JUROS E ENCARGOS DA DÍVIDA</option>
                                 <option value="3 - OUTRAS DESPESAS CORRENTES">3 - OUTRAS DESPESAS CORRENTES</option>
@@ -369,8 +364,6 @@
                         <div class="col-md-6">
                             <label class="filter-label mb-2 d-block">Emenda Parlamentar Estadual</label>
                             <select id="filter-emenda" class="form-select custom-select-filter" multiple size="1">
-                                <option value="" disabled selected>0 selecionados</option>
-                                <option value="Todos">Todas as despesas</option>
                                 <option value="SEM EMENDA ESTADUAL">SEM EMENDA ESTADUAL (E0000)</option>
                                 <option value="APENAS EMENDA ESTADUAL">APENAS EMENDA ESTADUAL (≠ E0000)</option>
                             </select>
@@ -393,6 +386,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <script src="script.js"></script>
 </body>
 
