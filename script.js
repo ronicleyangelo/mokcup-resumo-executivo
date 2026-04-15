@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
         { po: '000002 - D. OBRIG.', o25: 28000000000, a25: 28000000000, e25: 25000000000, l25: 18000000000, l24: 17000000000, o26: 30000000000, a26: 30000000000, e26: 28000000000, l26: 22000000000 },
         { po: '003213 - SEGER', o25: 1200000000, a25: 1200000000, e25: 1100000000, l25: 900000000, l24: 850000000, o26: 1300000000, a26: 1250000000, e26: 1150000000, l26: 1050000000 }
     ];
-    const poList = poDataDetailed; // For compatibility with chart code if it uses poList
+    const poList = [...poDataDetailed].sort((a, b) => b.a26 - a.a26);
 
     const sucessTableData = [
         { ano: 2026, grupo: expenseGroups[0], aut: '14,20 B', emp: '13,50 B', liq: '8,20 B', p_emp: '95,1%', p_liq: '57,7%' },
@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <td style="background:rgba(30,58,138,0.05);" title="Variação Percentual: ${v26T}%">${v26T}%</td>
     </tr>`;
 
-    poDataDetailed.forEach(d => {
+    poList.forEach(d => {
         const v25 = calcVar(d.l25, d.l24);
         const v26 = calcVar(d.l26, d.l25);
         tablePoHtml += `<tr>
