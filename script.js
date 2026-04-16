@@ -33,18 +33,18 @@ document.addEventListener('DOMContentLoaded', function () {
         { ano: 2025, grupo: expenseGroups[3], aut: '8,40 B', emp: '7,20 B', liq: '5,10 B', p_emp: '85,7%', p_liq: '60,7%' },
         // Mock 2024
         { ano: 2024, grupo: expenseGroups[0], aut: '11,50 B', emp: '10,58 B', liq: '10,12 B', p_emp: '92,0%', p_liq: '88,0%' },
-        { ano: 2024, grupo: expenseGroups[1], aut: '1,90 B',  emp: '1,61 B',  liq: '1,55 B',  p_emp: '85,0%', p_liq: '82,0%' },
-        { ano: 2024, grupo: expenseGroups[2], aut: '6,50 B',  emp: '5,85 B',  liq: '5,20 B',  p_emp: '90,0%', p_liq: '80,0%' },
-        { ano: 2024, grupo: expenseGroups[3], aut: '7,40 B',  emp: '7,40 B',  liq: '7,03 B',  p_emp: '100,0%', p_liq: '95,0%' },
-        { ano: 2024, grupo: expenseGroups[4], aut: '0,40 B',  emp: '0,28 B',  liq: '0,26 B',  p_emp: '70,0%', p_liq: '65,0%' },
-        { ano: 2024, grupo: expenseGroups[5], aut: '1,80 B',  emp: '1,44 B',  liq: '1,35 B',  p_emp: '80,0%', p_liq: '75,0%' },
+        { ano: 2024, grupo: expenseGroups[1], aut: '1,90 B', emp: '1,61 B', liq: '1,55 B', p_emp: '85,0%', p_liq: '82,0%' },
+        { ano: 2024, grupo: expenseGroups[2], aut: '6,50 B', emp: '5,85 B', liq: '5,20 B', p_emp: '90,0%', p_liq: '80,0%' },
+        { ano: 2024, grupo: expenseGroups[3], aut: '7,40 B', emp: '7,40 B', liq: '7,03 B', p_emp: '100,0%', p_liq: '95,0%' },
+        { ano: 2024, grupo: expenseGroups[4], aut: '0,40 B', emp: '0,28 B', liq: '0,26 B', p_emp: '70,0%', p_liq: '65,0%' },
+        { ano: 2024, grupo: expenseGroups[5], aut: '1,80 B', emp: '1,44 B', liq: '1,35 B', p_emp: '80,0%', p_liq: '75,0%' },
         // Mock 2023
         { ano: 2023, grupo: expenseGroups[0], aut: '10,50 B', emp: '9,24 B', liq: '8,92 B', p_emp: '88,0%', p_liq: '85,0%' },
-        { ano: 2023, grupo: expenseGroups[1], aut: '1,80 B',  emp: '1,44 B', liq: '1,40 B', p_emp: '80,0%', p_liq: '78,0%' },
-        { ano: 2023, grupo: expenseGroups[2], aut: '5,50 B',  emp: '4,67 B', liq: '4,12 B', p_emp: '85,0%', p_liq: '75,0%' },
-        { ano: 2023, grupo: expenseGroups[3], aut: '6,40 B',  emp: '5,76 B', liq: '5,44 B', p_emp: '90,0%', p_liq: '85,0%' },
-        { ano: 2023, grupo: expenseGroups[4], aut: '0,35 B',  emp: '0,22 B', liq: '0,21 B', p_emp: '65,0%', p_liq: '60,0%' },
-        { ano: 2023, grupo: expenseGroups[5], aut: '1,50 B',  emp: '1,12 B', liq: '1,05 B', p_emp: '75,0%', p_liq: '70,0%' }
+        { ano: 2023, grupo: expenseGroups[1], aut: '1,80 B', emp: '1,44 B', liq: '1,40 B', p_emp: '80,0%', p_liq: '78,0%' },
+        { ano: 2023, grupo: expenseGroups[2], aut: '5,50 B', emp: '4,67 B', liq: '4,12 B', p_emp: '85,0%', p_liq: '75,0%' },
+        { ano: 2023, grupo: expenseGroups[3], aut: '6,40 B', emp: '5,76 B', liq: '5,44 B', p_emp: '90,0%', p_liq: '85,0%' },
+        { ano: 2023, grupo: expenseGroups[4], aut: '0,35 B', emp: '0,22 B', liq: '0,21 B', p_emp: '65,0%', p_liq: '60,0%' },
+        { ano: 2023, grupo: expenseGroups[5], aut: '1,50 B', emp: '1,12 B', liq: '1,05 B', p_emp: '75,0%', p_liq: '70,0%' }
     ];
 
     const fmtB = (v) => "R$ " + (v / 1000000000).toFixed(2) + " B";
@@ -91,48 +91,56 @@ document.addEventListener('DOMContentLoaded', function () {
     function getSuccessChartOptions(selectedYears = ['2026']) {
         const groups = expenseGroups.slice(0, 6);
         const series = [];
-        const colors = ['#3b82f6', '#8b5cf6', '#f43f5e', '#f59e0b', '#06b6d4', '#10b981'];
+        // Cores vibrantes para diferenciar os Anos
+        const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#f43f5e', '#06b6d4'];
 
-        groups.forEach((g, i) => {
-            const shortName = g.split('-')[1].trim();
+        selectedYears.forEach((year, i) => {
             const liqData = [];
             const empDiffData = [];
 
-            selectedYears.forEach(year => {
+            groups.forEach(g => {
                 const item = sucessTableData.find(d => d.ano === parseInt(year) && d.grupo.includes(g.split(' ')[0]));
-                const emp = item ? parseFloat(item.p_emp.toString().replace('%','').replace(',','.')) : 0;
-                const liq = item ? parseFloat(item.p_liq.toString().replace('%','').replace(',','.')) : 0;
-                
-                liqData.push(liq);
-                empDiffData.push(Math.max(0, emp - liq)); // A liquidar (Empenhado não liquidado)
+                const emp = item ? parseFloat(item.p_emp.toString().replace('%', '').replace(',', '.')) : 0;
+                const liq = item ? parseFloat(item.p_liq.toString().replace('%', '').replace(',', '.')) : 0;
+
+                // Distribuição proporcional para bater 100%
+                const propLiq = emp > 0 ? (liq / emp) * 100 : 0;
+                const propEmpDiff = emp > 0 ? ((emp - liq) / emp) * 100 : 0;
+
+                liqData.push(propLiq);
+                empDiffData.push(propEmpDiff);
             });
 
-            // 1. Parte Inferior (Liquidado)
+            const colorKey = colors[i % colors.length];
+
+            // 1. Parte Inferior/Esquerda (Liquidado)
             series.push({
-                name: `${shortName} (Liquidado)`,
+                name: `${year} (Liquidado)`,
                 type: 'bar',
-                stack: `stack_${i}`,
+                stack: `stack_${year}`,
                 data: liqData,
-                itemStyle: { color: colors[i] },
-                label: { 
-                    show: true, 
-                    position: 'inside', 
-                    fontSize: 8, 
+                itemStyle: { color: colorKey },
+                showBackground: true,
+                backgroundStyle: { color: 'rgba(230, 235, 240, 0.4)', borderRadius: [0, 4, 4, 0] },
+                label: {
+                    show: true,
+                    position: 'inside',
+                    fontSize: 8,
                     color: '#fff',
-                    formatter: (params) => params.value > 0 ? params.value.toFixed(1) + '%' : '' 
+                    formatter: (params) => params.value > 0 ? params.value.toFixed(1) + '%' : ''
                 }
             });
 
-            // 2. Parte do Meio (Empenhado a Liquidar)
+            // 2. Parte Superior/Direita (Empenhado)
             series.push({
-                name: `${shortName} (A Liquidar)`,
+                name: `${year} (Empenhado)`,
                 type: 'bar',
-                stack: `stack_${i}`,
+                stack: `stack_${year}`,
                 data: empDiffData,
-                itemStyle: { color: colors[i], opacity: 0.5 },
-                label: { 
-                    show: true, 
-                    position: 'inside', 
+                itemStyle: { color: colorKey, opacity: 0.5 },
+                label: {
+                    show: true,
+                    position: 'inside',
                     fontSize: 8,
                     color: '#fff',
                     formatter: (params) => params.value > 0 ? params.value.toFixed(1) + '%' : ''
@@ -142,8 +150,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return {
             legend: { top: '0%', type: 'scroll', textStyle: { fontSize: 9 } },
-            tooltip: { 
-                trigger: 'item', 
+            tooltip: {
+                trigger: 'item',
                 backgroundColor: 'transparent',
                 borderColor: 'transparent',
                 borderWidth: 0,
@@ -151,28 +159,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 textStyle: { color: 'inherit' },
                 extraCssText: 'box-shadow: none;',
                 formatter: function (params) {
-                    const yearIndex = params.dataIndex;
-                    const groupSeriesName = params.seriesName.replace(' (Liquidado)','').replace(' (A Liquidar)','');
+                    const groupIndex = params.dataIndex; // Index in the groups array
+                    const yearName = params.seriesName.replace(' (Liquidado)', '').replace(' (Empenhado)', ''); // The Year
                     const myStack = series.find(s => s.name === params.seriesName).stack;
-                    const groupSeries = series.filter(s => s.stack === myStack);
+                    const yearSeries = series.filter(s => s.stack === myStack);
 
-                    const liqSeries = groupSeries.find(s => s.name.includes('(Liquidado)'));
-                    const empDiffSeries = groupSeries.find(s => s.name.includes('(A Liquidar)'));
-                    
-                    const liqVal = liqSeries ? liqSeries.data[yearIndex] : 0;
-                    const empDiffVal = empDiffSeries ? empDiffSeries.data[yearIndex] : 0;
-                    const totalEmp = liqVal + empDiffVal;
+                    const liqSeries = yearSeries.find(s => s.name.includes('(Liquidado)'));
+                    const empDiffSeries = yearSeries.find(s => s.name.includes('(Empenhado)'));
+
+                    const liqVal = liqSeries ? liqSeries.data[groupIndex] : 0;
+                    const empDiffVal = empDiffSeries ? empDiffSeries.data[groupIndex] : 0;
                     const color = liqSeries ? liqSeries.itemStyle.color : '#000';
 
                     let rowsHtml = '';
-                    rowsHtml += `<div class="tooltip-row active" style="margin-bottom: 4px;"><span class="dot" style="background:${color}"></span><span class="label">Empenhado</span><span class="val" style="margin-left: 15px;">${totalEmp.toFixed(1)}%</span></div>`;
+                    rowsHtml += `<div class="tooltip-row active" style="margin-bottom: 4px;"><span class="dot" style="background:${color}"></span><span class="label">Empenhado</span><span class="val" style="margin-left: 15px;">${empDiffVal.toFixed(1)}%</span></div>`;
                     rowsHtml += `<div class="tooltip-row active"><span class="dot" style="background:${color}; opacity: 0.7;"></span><span class="label">Liquidado</span><span class="val" style="margin-left: 15px;">${liqVal.toFixed(1)}%</span></div>`;
 
                     return `
                         <div class="premium-tooltip" style="position:relative; z-index:9999;">
                             <div class="tooltip-header">
-                                <div class="uo-info">${groupSeriesName}</div>
-                                <div class="exercise-info">Exercício ${params.name}</div>
+                                <div class="uo-info" style="font-size: 11px;">${params.name}</div>
+                                <div class="exercise-info">Exercício ${yearName}</div>
                             </div>
                             <div class="tooltip-body">
                                 ${rowsHtml}
@@ -181,18 +188,24 @@ document.addEventListener('DOMContentLoaded', function () {
                     `;
                 }
             },
-            grid: { bottom: '15%', top: '25%', left: '5%', right: '5%', containLabel: true },
-            xAxis: { 
-                type: 'category', 
-                data: selectedYears,
-                axisLabel: { fontSize: 12, fontWeight: 'bold' } 
+            grid: { bottom: '5%', top: '15%', left: '2%', right: '5%', containLabel: true },
+            xAxis: {
+                type: 'value',
+                max: 100,
+                axisLabel: { fontSize: 8, formatter: '{value}%' },
+                splitLine: { show: true, lineStyle: { type: 'dashed' } }
             },
-            yAxis: { max: 100, axisLabel: { fontSize: 8, formatter: '{value}%' } },
+            yAxis: {
+                type: 'category',
+                data: groups, // The full names with numbers!
+                inverse: true, // Keeps 1 on top and 6 on bottom
+                axisLabel: { fontSize: 9, fontWeight: 'bold' }
+            },
             dataZoom: [
-                { type: 'inside' },
-                { 
-                    type: 'slider', bottom: '2%', height: 12,
-                    start: 0, end: 100
+                { type: 'inside', yAxisIndex: 0 },
+                {
+                    type: 'slider', yAxisIndex: 0, right: '2%', width: 12,
+                    start: 0, end: groups.length > 4 ? 80 : 100
                 }
             ],
             series: series
@@ -340,14 +353,14 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderSucessoTable(years) {
         const sortedYears = [...years].sort(); // ASC order
         let theadHtml = `<tr><th rowspan="2" style="vertical-align: middle;">Grupo de Despesa</th>`;
-        
+
         sortedYears.forEach(y => {
             const isLatest = (y === sortedYears[sortedYears.length - 1]);
             const bgClass = isLatest ? 'style="background: #1e3a8a;" class="text-center text-white"' : 'class="text-center table-active"';
             theadHtml += `<th colspan="5" ${bgClass}>${y}</th>`;
         });
         theadHtml += `</tr><tr>`;
-        
+
         sortedYears.forEach(y => {
             theadHtml += `
                 <th style="font-size: 8px;">Autorizado</th>
@@ -367,13 +380,13 @@ document.addEventListener('DOMContentLoaded', function () {
         let totals = {};
         sortedYears.forEach(y => { totals[y] = { a: 0, e: 0, l: 0 }; });
 
-        expenseGroups.slice(0,6).forEach(g => {
+        expenseGroups.slice(0, 6).forEach(g => {
             sortedYears.forEach(y => {
                 const item = sucessTableData.find(d => d.ano === parseInt(y) && d.grupo === g);
-                if(item) {
-                     totals[y].a += pS(item.aut||0);
-                     totals[y].e += pS(item.emp||0);
-                     totals[y].l += pS(item.liq||0);
+                if (item) {
+                    totals[y].a += pS(item.aut || 0);
+                    totals[y].e += pS(item.emp || 0);
+                    totals[y].l += pS(item.liq || 0);
                 }
             });
         });
@@ -391,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         tbodyHtml += `</tr>`;
 
-        expenseGroups.slice(0,6).forEach(g => {
+        expenseGroups.slice(0, 6).forEach(g => {
             tbodyHtml += `<tr><td style="text-align:left; font-weight:600;" title="${g}">${g}</td>`;
             sortedYears.forEach(y => {
                 const item = sucessTableData.find(d => d.ano === parseInt(y) && d.grupo === g);
@@ -409,10 +422,10 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             tbodyHtml += `</tr>`;
         });
-        
+
         popTab('table-sucesso-detalhado', tbodyHtml);
     }
-    
+
     renderSucessoTable(['2025', '2026']); // Render inicial
 
     // C. Comparativo Despesa Table
@@ -529,11 +542,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    document.getElementById('btn-filtrar')?.addEventListener('click', function() {
+    document.getElementById('btn-filtrar')?.addEventListener('click', function () {
         updateChips();
         const selectedYears = Array.from(filterRefs.ano.selectedOptions).map(opt => opt.value).filter(v => v !== '');
         const yearsToUse = selectedYears.length > 0 ? selectedYears : ['2026'];
-        
+
         if (successChart) successChart.setOption(getSuccessChartOptions(yearsToUse));
         renderSucessoTable(yearsToUse); // Atualiza a tabela com os anos filtrados
     });
@@ -557,7 +570,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (successChart) successChart.setOption(getSuccessChartOptions(['2026']));
         renderSucessoTable(['2026']);
     });
-    
+
     // Inicializar Choices.js Premium
     window.choicesMap = new Map();
     document.querySelectorAll('select.custom-select-filter').forEach(el => {
