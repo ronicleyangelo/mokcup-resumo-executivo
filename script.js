@@ -2,63 +2,90 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Mock Data ---
     const dispoData = {
         categories: ['Disponível', 'Disponível sem Reserva', 'Disponível com Reserva', 'Empenhado a Liquidar'],
-        values: [32.03, 25.10, 6.93, 15.45]
+        values: [3196600.71, 1559073.20, 1637527.51, 10714855.18]
     };
 
     const expenseGroups = [
         '1 - PESSOAL E ENCARGOS SOCIAIS', '2 - JUROS E ENCARGOS DA DÍVIDA', '3 - OUTRAS DESPESAS CORRENTES',
-        '4 - INVESTIMENTOS', '5 - INVERSÕES FINANCEIRAS', '6 - AMORTIZAÇÃO DA DÍVIDA', '9 - RESERVA DE CONTINGÊNCIA'
+        '4 - INVESTIMENTOS', '5 - INVERSÕES FINANCEIRAS', '6 - AMORTIZAÇÃO DA DÍVIDA', '9 - RESERVA DE CONTINGÊNCIA',
+        'R1 - RECEITAS CORRENTES', 'R2 - RECEITAS DE CAPITAL'
     ];
 
     const poDataDetailed = [
-        { po: '000001 - N. DEF.', o25: 450000000, a25: 420000000, e25: 380000000, l25: 250000000, l24: 220000000, o26: 480000000, a26: 450000000, e26: 350000000, l26: 300000000 },
-        { po: '003339 - SEP', o25: 8200000000, a25: 9100000000, e25: 8500000000, l25: 5200000000, l24: 4800000000, o26: 8500000000, a26: 9200000000, e26: 8800000000, l26: 5500000000 },
-        { po: '002778 - TI', o25: 6100000000, a25: 6100000000, e25: 5800000000, l25: 3100000000, l24: 2900000000, o26: 6200000000, a26: 6150000000, e26: 5900000000, l26: 3400000000 },
-        { po: '001676 - ADM. UNID', o25: 3500000000, a25: 4200000000, e25: 3100000000, l25: 1200000000, l24: 1500000000, o26: 3800000000, a26: 4400000000, e26: 3500000000, l26: 1800000000 },
-        { po: '000002 - D. OBRIG.', o25: 28000000000, a25: 28000000000, e25: 25000000000, l25: 18000000000, l24: 17000000000, o26: 30000000000, a26: 30000000000, e26: 28000000000, l26: 22000000000 },
-        { po: '003213 - SEGER', o25: 1200000000, a25: 1200000000, e25: 1100000000, l25: 900000000, l24: 850000000, o26: 1300000000, a26: 1250000000, e26: 1150000000, l26: 1050000000 }
+        { po: '000001 - N. DEF.', o23: 380000, a23: 350000, e23: 310000, l23: 190000, o24: 420000, a24: 400000, e24: 350000, l24: 220000, o25: 450000, a25: 420000, e25: 380000, l25: 250000, o26: 480000, a26: 450000, e26: 350000, l26: 300000 },
+        { po: '003339 - SEP', o23: 7500000, a23: 8200000, e23: 7800000, l23: 4500000, o24: 7800000, a24: 8500000, e24: 8000000, l24: 4800000, o25: 8200000, a25: 9100000, e25: 8500000, l25: 5200000, o26: 8500000, a26: 9200000, e26: 8800000, l26: 5500000 },
+        { po: '002778 - TI', o23: 5500000, a23: 5500000, e23: 5200000, l23: 2600000, o24: 5800000, a24: 5800000, e24: 5500000, l24: 2900000, o25: 6100000, a25: 6100000, e25: 5800000, l25: 3100000, o26: 6200000, a26: 6150000, e26: 5900000, l26: 3400000 },
+        { po: '001676 - ADM. UNID', o23: 2900000, a23: 3500000, e23: 2800000, l23: 1300000, o24: 3200000, a24: 3800000, e24: 3000000, l24: 1500000, o25: 3500000, a25: 4200000, e25: 3100000, l25: 1200000, o26: 3800000, a26: 4400000, e26: 3500000, l26: 1800000 },
+        { po: '000002 - D. OBRIG.', o23: 2200000, a23: 2200000, e23: 1900000, l23: 1500000, o24: 2500000, a24: 2500000, e24: 2200000, l24: 1700000, o25: 2800000, a25: 2800000, e25: 2500000, l25: 1800000, o26: 3000000, a26: 3000000, e26: 2800000, l26: 2200000 },
+        { po: '003213 - SEGER', o23: 1000000, a23: 1000000, e23: 900000, l23: 800000, o24: 1100000, a24: 1100000, e24: 1000000, l24: 850000, o25: 1200000, a25: 1200000, e25: 1100000, l25: 900000, o26: 1300000, a26: 1250000, e26: 1150000, l26: 1050000 }
     ];
     const poList = [...poDataDetailed].sort((a, b) => b.a26 - a.a26);
 
     const sucessTableData = [
-        { ano: 2026, grupo: expenseGroups[0], aut: '14,20 B', emp: '13,50 B', liq: '8,20 B', p_emp: '95,1%', p_liq: '57,7%' },
-        { ano: 2026, grupo: expenseGroups[1], aut: '2,10 B', emp: '1,85 B', liq: '1,73 B', p_emp: '88,0%', p_liq: '82,4%' },
-        { ano: 2026, grupo: expenseGroups[2], aut: '8,40 B', emp: '7,76 B', liq: '5,88 B', p_emp: '92,4%', p_liq: '70,1%' },
-        { ano: 2026, grupo: expenseGroups[3], aut: '10,10 B', emp: '8,40 B', liq: '3,20 B', p_emp: '83,2%', p_liq: '31,7%' },
-        { ano: 2026, grupo: expenseGroups[4], aut: '0,50 B', emp: '0,38 B', liq: '0,23 B', p_emp: '76,0%', p_liq: '45,2%' },
-        { ano: 2026, grupo: expenseGroups[5], aut: '2,20 B', emp: '2,20 B', liq: '2,15 B', p_emp: '100,0%', p_liq: '98,0%' },
-        { ano: 2025, grupo: expenseGroups[0], aut: '12,50 B', emp: '12,10 B', liq: '11,80 B', p_emp: '96,8%', p_liq: '94,4%' },
-        { ano: 2025, grupo: expenseGroups[1], aut: '2,00 B', emp: '1,80 B', liq: '1,70 B', p_emp: '90,0%', p_liq: '85,0%' },
-        { ano: 2025, grupo: expenseGroups[2], aut: '7,50 B', emp: '7,10 B', liq: '6,40 B', p_emp: '94,7%', p_liq: '85,3%' },
-        { ano: 2025, grupo: expenseGroups[3], aut: '8,40 B', emp: '7,20 B', liq: '5,10 B', p_emp: '85,7%', p_liq: '60,7%' },
-        // Mock 2024
-        { ano: 2024, grupo: expenseGroups[0], aut: '11,50 B', emp: '10,58 B', liq: '10,12 B', p_emp: '92,0%', p_liq: '88,0%' },
-        { ano: 2024, grupo: expenseGroups[1], aut: '1,90 B',  emp: '1,61 B',  liq: '1,55 B',  p_emp: '85,0%', p_liq: '82,0%' },
-        { ano: 2024, grupo: expenseGroups[2], aut: '6,50 B',  emp: '5,85 B',  liq: '5,20 B',  p_emp: '90,0%', p_liq: '80,0%' },
-        { ano: 2024, grupo: expenseGroups[3], aut: '7,40 B',  emp: '7,40 B',  liq: '7,03 B',  p_emp: '100,0%', p_liq: '95,0%' },
-        { ano: 2024, grupo: expenseGroups[4], aut: '0,40 B',  emp: '0,28 B',  liq: '0,26 B',  p_emp: '70,0%', p_liq: '65,0%' },
-        { ano: 2024, grupo: expenseGroups[5], aut: '1,80 B',  emp: '1,44 B',  liq: '1,35 B',  p_emp: '80,0%', p_liq: '75,0%' },
-        // Mock 2023
-        { ano: 2023, grupo: expenseGroups[0], aut: '10,50 B', emp: '9,24 B', liq: '8,92 B', p_emp: '88,0%', p_liq: '85,0%' },
-        { ano: 2023, grupo: expenseGroups[1], aut: '1,80 B',  emp: '1,44 B', liq: '1,40 B', p_emp: '80,0%', p_liq: '78,0%' },
-        { ano: 2023, grupo: expenseGroups[2], aut: '5,50 B',  emp: '4,67 B', liq: '4,12 B', p_emp: '85,0%', p_liq: '75,0%' },
-        { ano: 2023, grupo: expenseGroups[3], aut: '6,40 B',  emp: '5,76 B', liq: '5,44 B', p_emp: '90,0%', p_liq: '85,0%' },
-        { ano: 2023, grupo: expenseGroups[4], aut: '0,35 B',  emp: '0,22 B', liq: '0,21 B', p_emp: '65,0%', p_liq: '60,0%' },
-        { ano: 2023, grupo: expenseGroups[5], aut: '1,50 B',  emp: '1,12 B', liq: '1,05 B', p_emp: '75,0%', p_liq: '70,0%' }
+        { ano: 2026, grupo: expenseGroups[0], aut: '13,00 mi', emp: '12,39 mi', liq: '2,95 mi', p_emp: '95,34%', p_liq: '22,70%' },
+        { ano: 2026, grupo: expenseGroups[1], aut: '0,00 mi', emp: '0,00 mi', liq: '0,00 mi', p_emp: '0,0%', p_liq: '0,0%' },
+        { ano: 2026, grupo: expenseGroups[2], aut: '4,40 mi', emp: '1,89 mi', liq: '0,56 mi', p_emp: '42,98%', p_liq: '12,82%' },
+        { ano: 2026, grupo: expenseGroups[3], aut: '0,09 mi', emp: '0,01 mi', liq: '0,01 mi', p_emp: '10,96%', p_liq: '10,96%' },
+        { ano: 2026, grupo: expenseGroups[4], aut: '0,00 mi', emp: '0,00 mi', liq: '0,00 mi', p_emp: '0,0%', p_liq: '0,0%' },
+        { ano: 2026, grupo: expenseGroups[5], aut: '0,00 mi', emp: '0,00 mi', liq: '0,00 mi', p_emp: '0,0%', p_liq: '0,0%' },
+
+        { ano: 2025, grupo: expenseGroups[0], aut: '13,00 mi', emp: '12,63 mi', liq: '12,63 mi', p_emp: '97,14%', p_liq: '97,14%' },
+        { ano: 2025, grupo: expenseGroups[1], aut: '0,00 mi', emp: '0,00 mi', liq: '0,00 mi', p_emp: '0,0%', p_liq: '0,0%' },
+        { ano: 2025, grupo: expenseGroups[2], aut: '7,40 mi', emp: '6,98 mi', liq: '5,32 mi', p_emp: '94,38%', p_liq: '71,86%' },
+        { ano: 2025, grupo: expenseGroups[3], aut: '0,40 mi', emp: '0,32 mi', liq: '0,07 mi', p_emp: '80,34%', p_liq: '18,12%' },
+        { ano: 2025, grupo: expenseGroups[4], aut: '0,00 mi', emp: '0,00 mi', liq: '0,00 mi', p_emp: '0,0%', p_liq: '0,0%' },
+        { ano: 2025, grupo: expenseGroups[5], aut: '0,00 mi', emp: '0,00 mi', liq: '0,00 mi', p_emp: '0,0%', p_liq: '0,0%' },
+
+        { ano: 2026, grupo: expenseGroups[7], aut: '45,00 mi', emp: '42,00 mi', liq: '38,00 mi', p_emp: '93,33%', p_liq: '84,44%' },
+        { ano: 2026, grupo: expenseGroups[8], aut: '12,00 mi', emp: '8,00 mi', liq: '6,00 mi', p_emp: '66,67%', p_liq: '50,00%' },
+
+        { ano: 2025, grupo: expenseGroups[0], aut: '13,00 mi', emp: '12,63 mi', liq: '12,63 mi', p_emp: '97,14%', p_liq: '97,14%' },
+        { ano: 2025, grupo: expenseGroups[1], aut: '0,00 mi', emp: '0,00 mi', liq: '0,00 mi', p_emp: '0,0%', p_liq: '0,0%' },
+        { ano: 2025, grupo: expenseGroups[2], aut: '7,40 mi', emp: '6,98 mi', liq: '5,32 mi', p_emp: '94,38%', p_liq: '71,86%' },
+        { ano: 2025, grupo: expenseGroups[3], aut: '0,40 mi', emp: '0,32 mi', liq: '0,07 mi', p_emp: '80,34%', p_liq: '18,12%' },
+        { ano: 2025, grupo: expenseGroups[4], aut: '0,00 mi', emp: '0,00 mi', liq: '0,00 mi', p_emp: '0,0%', p_liq: '0,0%' },
+        { ano: 2025, grupo: expenseGroups[5], aut: '0,00 mi', emp: '0,00 mi', liq: '0,00 mi', p_emp: '0,0%', p_liq: '0,0%' },
+        { ano: 2025, grupo: expenseGroups[7], aut: '42,00 mi', emp: '41,50 mi', liq: '41,00 mi', p_emp: '98,81%', p_liq: '97,62%' },
+        { ano: 2025, grupo: expenseGroups[8], aut: '10,00 mi', emp: '9,50 mi', liq: '9,20 mi', p_emp: '95,00%', p_liq: '92,00%' },
+
+        // Dados de 2024
+        { ano: 2024, grupo: expenseGroups[0], aut: '12,00 mi', emp: '11,04 mi', liq: '10,56 mi', p_emp: '92,00%', p_liq: '88,00%' },
+        { ano: 2024, grupo: expenseGroups[1], aut: '1,50 mi', emp: '1,27 mi', liq: '1,20 mi', p_emp: '85,00%', p_liq: '80,00%' },
+        { ano: 2024, grupo: expenseGroups[2], aut: '6,50 mi', emp: '5,85 mi', liq: '5,20 mi', p_emp: '90,00%', p_liq: '80,00%' },
+        { ano: 2024, grupo: expenseGroups[3], aut: '0,35 mi', emp: '0,35 mi', liq: '0,33 mi', p_emp: '100,00%', p_liq: '95,00%' },
+        { ano: 2024, grupo: expenseGroups[4], aut: '0,20 mi', emp: '0,15 mi', liq: '0,13 mi', p_emp: '75,00%', p_liq: '65,00%' },
+        { ano: 2024, grupo: expenseGroups[5], aut: '1,00 mi', emp: '0,85 mi', liq: '0,80 mi', p_emp: '85,00%', p_liq: '80,00%' },
+        { ano: 2024, grupo: expenseGroups[7], aut: '40,00 mi', emp: '39,00 mi', liq: '38,50 mi', p_emp: '97,50%', p_liq: '96,25%' },
+        { ano: 2024, grupo: expenseGroups[8], aut: '9,00 mi', emp: '8,50 mi', liq: '8,00 mi', p_emp: '94,44%', p_liq: '88,89%' },
+
+        // Dados de 2023
+        { ano: 2023, grupo: expenseGroups[0], aut: '11,00 mi', emp: '9,68 mi', liq: '9,35 mi', p_emp: '88,00%', p_liq: '85,00%' },
+        { ano: 2023, grupo: expenseGroups[1], aut: '1,30 mi', emp: '1,04 mi', liq: '1,01 mi', p_emp: '80,00%', p_liq: '78,00%' },
+        { ano: 2023, grupo: expenseGroups[2], aut: '5,50 mi', emp: '4,67 mi', liq: '4,12 mi', p_emp: '85,00%', p_liq: '75,00%' },
+        { ano: 2023, grupo: expenseGroups[3], aut: '0,30 mi', emp: '0,27 mi', liq: '0,25 mi', p_emp: '90,00%', p_liq: '85,00%' },
+        { ano: 2023, grupo: expenseGroups[4], aut: '0,15 mi', emp: '0,10 mi', liq: '0,09 mi', p_emp: '65,00%', p_liq: '60,00%' },
+        { ano: 2023, grupo: expenseGroups[5], aut: '0,80 mi', emp: '0,60 mi', liq: '0,56 mi', p_emp: '75,00%', p_liq: '70,00%' },
+        { ano: 2023, grupo: expenseGroups[7], aut: '38,00 mi', emp: '37,00 mi', liq: '36,50 mi', p_emp: '97,37%', p_liq: '96,05%' },
+        { ano: 2023, grupo: expenseGroups[8], aut: '8,00 mi', emp: '7,50 mi', liq: '7,00 mi', p_emp: '93,75%', p_liq: '87,50%' }
     ];
 
-    const fmtB = (v) => "R$ " + (v / 1000000000).toFixed(2) + " B";
+    const fmtB = (v) => "R$ " + (v / 1000000).toFixed(2) + " mi";
     const fmtFull = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 });
-    const fV = (v) => v.toFixed(2) + " B";
+    const fV = (v) => v.toFixed(2) + " mi";
     const popTab = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
     // --- Shared Premium Tooltip ---
-    const buildTooltip = (title, subtitle, series, w, dataPointIndex) => {
+    const buildTooltip = (title, subtitle, series, w, dataPointIndex, isCurrency = true) => {
         let rowsHtml = '';
         series.forEach((sVal, i) => {
             const seriesName = w.globals.seriesNames[i];
             const color = w.config.colors[i];
             const val = sVal[dataPointIndex];
-            const formattedVal = val > 100 ? fmtFull(val * 1e9) : (val.toFixed(1) + "%");
+            let formattedVal = '';
+            if (isCurrency) {
+                formattedVal = fmtFull(val < 1000 ? val * 1e9 : val);
+            } else {
+                formattedVal = val.toFixed(1) + "%";
+            }
             rowsHtml += `<div class="tooltip-row active"><span class="dot" style="background:${color}"></span><span class="label">${seriesName}</span><span class="val">${formattedVal}</span></div>`;
         });
         return `<div class="premium-tooltip"><div class="tooltip-header"><div class="uo-info">${title}</div><div class="exercise-info">${subtitle}</div></div><div class="tooltip-body">${rowsHtml}</div></div>`;
@@ -71,27 +98,27 @@ document.addEventListener('DOMContentLoaded', function () {
         series: [{ name: 'Valor', data: dispoData.values }],
         chart: { type: 'bar', height: '100%', toolbar: { show: false } },
         colors: ['#56c0d8', '#ef8b9c', '#56a380', '#a372c4'],
-        plotOptions: { bar: { borderRadius: 0, horizontal: false, distributed: true, dataLabels: { position: 'top' } } },
-        dataLabels: { enabled: false },
+        plotOptions: { bar: { borderRadius: 0, horizontal: false, distributed: true, dataLabels: { position: 'top', enabled: true, formatter: (val) => "R$ " + val.toLocaleString('pt-BR') } } },
+        dataLabels: { enabled: true, style: { fontSize: '9px' }, offsetY: -20, formatter: (val) => "R$ " + val.toLocaleString('pt-BR') },
         xaxis: {
             categories: dispoData.categories,
             labels: { rotate: 0, trim: true, style: { fontSize: '9px', fontWeight: 600 } }
         },
-        yaxis: { show: true, labels: { formatter: (val) => "R$ " + val + " B" } },
+        yaxis: { show: true, labels: { formatter: (val) => "R$ " + (val / 1e6).toFixed(0) + "M" } },
         grid: { show: true, borderColor: '#f1f1f1' },
         legend: { show: true, position: 'bottom', markers: { radius: 4 } },
         tooltip: {
             custom: function ({ series, dataPointIndex, w }) {
                 const label = w.globals.labels[dataPointIndex];
-                return buildTooltip(label, "Exercício 2026", series, w, dataPointIndex);
+                return buildTooltip(label, "Exercício 2026", series, w, dataPointIndex, true);
             }
         }
     }).render();
 
     function getSuccessChartOptions(selectedYears = ['2026']) {
-        const groups = expenseGroups.slice(0, 6);
+        const groups = expenseGroups.filter(g => g.startsWith('1') || g.startsWith('3') || g.startsWith('4') || g.startsWith('R'));
         const series = [];
-        const colors = ['#3b82f6', '#8b5cf6', '#f43f5e', '#f59e0b', '#06b6d4', '#10b981'];
+        const colors = ['#3b82f6', '#f43f5e', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4'];
 
         groups.forEach((g, i) => {
             const shortName = g.split('-')[1].trim();
@@ -100,39 +127,47 @@ document.addEventListener('DOMContentLoaded', function () {
 
             selectedYears.forEach(year => {
                 const item = sucessTableData.find(d => d.ano === parseInt(year) && d.grupo.includes(g.split(' ')[0]));
-                const emp = item ? parseFloat(item.p_emp.toString().replace('%','').replace(',','.')) : 0;
-                const liq = item ? parseFloat(item.p_liq.toString().replace('%','').replace(',','.')) : 0;
-                
-                liqData.push(liq);
-                empDiffData.push(Math.max(0, emp - liq)); // A liquidar (Empenhado não liquidado)
+                const emp = item ? parseFloat(item.p_emp.toString().replace('%', '').replace(',', '.')) : 0;
+                const liq = item ? parseFloat(item.p_liq.toString().replace('%', '').replace(',', '.')) : 0;
+
+                // Agora usamos os percentuais diretos sobre o Autorizado
+                const propLiq = liq;
+                const propEmpDiff = Math.max(0, emp - liq);
+
+                liqData.push(propLiq);
+                empDiffData.push(propEmpDiff);
             });
 
-            // 1. Parte Inferior (Liquidado)
+            const colorKey = colors[i % colors.length];
+
+            // 1. Parte Esquerda (Liquidado)
             series.push({
                 name: `${shortName} (Liquidado)`,
                 type: 'bar',
                 stack: `stack_${i}`,
                 data: liqData,
-                itemStyle: { color: colors[i] },
-                label: { 
-                    show: true, 
-                    position: 'inside', 
-                    fontSize: 8, 
+                itemStyle: { color: colorKey },
+                showBackground: true,
+                backgroundStyle: { color: 'rgba(230, 235, 240, 0.4)', borderRadius: [0, 4, 4, 0] },
+                label: {
+                    show: true,
+                    position: 'inside',
+                    fontSize: 8,
                     color: '#fff',
-                    formatter: (params) => params.value > 0 ? params.value.toFixed(1) + '%' : '' 
+                    formatter: (params) => params.value > 0 ? params.value.toFixed(1) + '%' : ''
                 }
             });
 
-            // 2. Parte do Meio (Empenhado a Liquidar)
+            // 2. Parte Direita (Empenhado - Liquidado)
             series.push({
-                name: `${shortName} (A Liquidar)`,
+                name: `${shortName} (Empenhado)`,
                 type: 'bar',
                 stack: `stack_${i}`,
                 data: empDiffData,
-                itemStyle: { color: colors[i], opacity: 0.5 },
-                label: { 
-                    show: true, 
-                    position: 'inside', 
+                itemStyle: { color: colorKey, opacity: 0.5 },
+                label: {
+                    show: true,
+                    position: 'inside',
                     fontSize: 8,
                     color: '#fff',
                     formatter: (params) => params.value > 0 ? params.value.toFixed(1) + '%' : ''
@@ -142,8 +177,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return {
             legend: { top: '0%', type: 'scroll', textStyle: { fontSize: 9 } },
-            tooltip: { 
-                trigger: 'item', 
+            tooltip: {
+                trigger: 'item',
                 backgroundColor: 'transparent',
                 borderColor: 'transparent',
                 borderWidth: 0,
@@ -152,27 +187,30 @@ document.addEventListener('DOMContentLoaded', function () {
                 extraCssText: 'box-shadow: none;',
                 formatter: function (params) {
                     const yearIndex = params.dataIndex;
-                    const groupSeriesName = params.seriesName.replace(' (Liquidado)','').replace(' (A Liquidar)','');
+                    const yearName = selectedYears[yearIndex];
+                    const groupSeriesName = params.seriesName.replace(' (Liquidado)', '').replace(' (Empenhado)', '');
                     const myStack = series.find(s => s.name === params.seriesName).stack;
                     const groupSeries = series.filter(s => s.stack === myStack);
 
                     const liqSeries = groupSeries.find(s => s.name.includes('(Liquidado)'));
-                    const empDiffSeries = groupSeries.find(s => s.name.includes('(A Liquidar)'));
-                    
+                    const empDiffSeries = groupSeries.find(s => s.name.includes('(Empenhado)'));
+
                     const liqVal = liqSeries ? liqSeries.data[yearIndex] : 0;
                     const empDiffVal = empDiffSeries ? empDiffSeries.data[yearIndex] : 0;
-                    const totalEmp = liqVal + empDiffVal;
+                    const empTotal = liqVal + empDiffVal; // Valor total empenhado %
                     const color = liqSeries ? liqSeries.itemStyle.color : '#000';
 
                     let rowsHtml = '';
-                    rowsHtml += `<div class="tooltip-row active" style="margin-bottom: 4px;"><span class="dot" style="background:${color}"></span><span class="label">Empenhado</span><span class="val" style="margin-left: 15px;">${totalEmp.toFixed(1)}%</span></div>`;
-                    rowsHtml += `<div class="tooltip-row active"><span class="dot" style="background:${color}; opacity: 0.7;"></span><span class="label">Liquidado</span><span class="val" style="margin-left: 15px;">${liqVal.toFixed(1)}%</span></div>`;
+                    // Empenhado total (soma das partes do stack)
+                    rowsHtml += `<div class="tooltip-row active" style="margin-bottom: 4px;"><span class="dot" style="background:${color}; opacity: 0.5;"></span><span class="label">Empenhado</span><span class="val" style="margin-left: 15px;">${empTotal.toFixed(1)}%</span></div>`;
+                    // Liquidado (apenas a base do stack)
+                    rowsHtml += `<div class="tooltip-row active"><span class="dot" style="background:${color}"></span><span class="label">Liquidado</span><span class="val" style="margin-left: 15px;">${liqVal.toFixed(1)}%</span></div>`;
 
                     return `
                         <div class="premium-tooltip" style="position:relative; z-index:9999;">
                             <div class="tooltip-header">
                                 <div class="uo-info">${groupSeriesName}</div>
-                                <div class="exercise-info">Exercício ${params.name}</div>
+                                <div class="exercise-info">Exercício ${yearName}</div>
                             </div>
                             <div class="tooltip-body">
                                 ${rowsHtml}
@@ -182,16 +220,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             },
             grid: { bottom: '15%', top: '25%', left: '5%', right: '5%', containLabel: true },
-            xAxis: { 
-                type: 'category', 
-                data: selectedYears,
-                axisLabel: { fontSize: 12, fontWeight: 'bold' } 
+            xAxis: {
+                type: 'value',
+                max: 100,
+                axisLabel: { fontSize: 8, formatter: '{value}%' },
+                splitLine: { show: true, lineStyle: { type: 'dashed' } }
             },
-            yAxis: { max: 100, axisLabel: { fontSize: 8, formatter: '{value}%' } },
+            yAxis: {
+                type: 'category',
+                data: selectedYears,
+                inverse: true,
+                axisLabel: { fontSize: 12, fontWeight: 'bold' }
+            },
             dataZoom: [
-                { type: 'inside' },
-                { 
-                    type: 'slider', bottom: '2%', height: 12,
+                { type: 'inside', yAxisIndex: 0 },
+                {
+                    type: 'slider', yAxisIndex: 0, right: '2%', width: 12,
                     start: 0, end: 100
                 }
             ],
@@ -212,41 +256,39 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // 3. Comparativo Despesa
+    // 3. Comparativo Despesa (Ajustado para % para bater com imagem 2)
     const compData = [
-        { g: expenseGroups[0], o25: 12.00, a25: 12.50, e25: 12.10, l25: 11.80, o26: 15.00, a26: 14.20, e26: 13.50, l26: 8.20 },
-        { g: expenseGroups[1], o25: 2.00, a25: 2.10, e25: 1.80, l25: 1.70, o26: 2.20, a26: 2.10, e26: 1.85, l26: 1.73 },
-        { g: expenseGroups[2], o25: 7.00, a25: 7.80, e25: 7.10, l25: 6.40, o26: 8.50, a26: 8.40, e26: 7.76, l26: 5.88 },
-        { g: expenseGroups[3], o25: 8.00, a25: 8.40, e25: 7.20, l25: 5.10, o26: 10.50, a26: 10.10, e26: 8.40, l26: 3.20 },
-        { g: expenseGroups[4], o25: 0.40, a25: 0.45, e25: 0.35, l25: 0.20, o26: 0.60, a26: 0.50, e26: 0.38, l26: 0.23 },
-        { g: expenseGroups[5], o25: 2.00, a25: 2.05, e25: 1.95, l25: 1.90, o26: 2.50, a26: 2.20, e26: 2.20, l26: 2.15 },
-        { g: expenseGroups[6], o25: 0.50, a25: 0.00, e25: 0.00, l25: 0.00, o26: 0.80, a26: 0.00, e26: 0.00, l26: 0.00 }
+        { g: expenseGroups[0], o25: 13.0, a25: 13.0, e25: 12.0, l25: 12.0, o26: 13.0, a26: 13.0, e26: 12.39, l26: 2.95, p_e26: 95.34, p_l26: 22.70 },
+        { g: expenseGroups[1], o25: 0.0, a25: 0.0, e25: 0.0, l25: 0.0, o26: 0.0, a26: 0.0, e26: 0.0, l26: 0.0, p_e26: 0, p_l26: 0 },
+        { g: expenseGroups[2], o25: 7.4, a25: 7.4, e25: 7.0, l25: 5.32, o26: 4.4, a26: 4.4, e26: 1.89, l26: 0.56, p_e26: 42.98, p_l26: 12.82 },
+        { g: expenseGroups[3], o25: 0.4, a25: 0.4, e25: 0.32, l25: 0.07, o26: 0.09, a26: 0.09, e26: 0.01, l26: 0.01, p_e26: 10.96, p_l26: 10.96 }
     ];
 
-    compData.sort((a, b) => b.l26 - a.l26);
+    compData.sort((a, b) => b.p_e26 - a.p_e26);
 
     new ApexCharts(document.querySelector("#chart-comparativo"), {
         series: [
-            { name: 'Liquidado 2025', data: compData.map(d => d.l25) },
-            { name: 'Liquidado 2026', data: compData.map(d => d.l26) }
+            { name: 'Empenhado/Autorizado (%)', data: compData.map(d => d.p_e26) },
+            { name: 'Liquidado/Autorizado (%)', data: compData.map(d => d.p_l26) }
         ],
         chart: { type: 'bar', height: '100%', toolbar: { show: false } },
         colors: ['#56c0d8', '#ef8b9c'],
         plotOptions: { bar: { borderRadius: 0, columnWidth: '70%', dataLabels: { position: 'top' } } },
-        dataLabels: { enabled: false },
+        dataLabels: { enabled: true, style: { fontSize: '8px' }, formatter: (v) => v > 0 ? v + '%' : '' },
         xaxis: {
             categories: compData.map(d => d.g),
             labels: { rotate: 0, trim: true, style: { fontSize: '9px', fontWeight: 600 } }
         },
         yaxis: {
             show: true,
-            labels: { style: { fontSize: '9px' }, formatter: (val) => "R$ " + val + " B" }
+            labels: { style: { fontSize: '9px' }, formatter: (val) => val + "%" }
         },
         grid: { show: true, borderColor: '#f1f1f1', strokeDashArray: 4 },
         legend: { position: 'bottom', horizontalAlign: 'center', offsetY: 0, markers: { radius: 4 } },
         tooltip: {
             custom: function ({ series, dataPointIndex, w }) {
                 const group = compData[dataPointIndex].g;
-                return buildTooltip(group, "Comparativo Realizado", series, w, dataPointIndex);
+                return buildTooltip(group, "Eficiência de Planejamento 2026", series, w, dataPointIndex, false);
             }
         }
     }).render();
@@ -294,9 +336,9 @@ document.addEventListener('DOMContentLoaded', function () {
         t_o26 += d.o26; t_a26 += d.a26; t_e26 += d.e26; t_l26 += d.l26;
     });
 
-    const fM = (v) => (v / 1000000).toFixed(1) + " M";
-    const fB = (v) => (v / 1000000000).toFixed(2) + " B";
-    const getF = (v) => v > 1000000000 ? fB(v) : fM(v);
+    const fM = (v) => (v / 1000000).toFixed(1) + " mi";
+    const fB = (v) => (v / 1000000).toFixed(2) + " mi";
+    const getF = (v) => fM(v);
 
     const calcVar = (curr, prev) => prev > 0 ? (((curr - prev) / prev) * 100).toFixed(1) : '0.0';
     const v25T = calcVar(t_l25, t_l24);
@@ -340,14 +382,14 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderSucessoTable(years) {
         const sortedYears = [...years].sort(); // ASC order
         let theadHtml = `<tr><th rowspan="2" style="vertical-align: middle;">Grupo de Despesa</th>`;
-        
+
         sortedYears.forEach(y => {
             const isLatest = (y === sortedYears[sortedYears.length - 1]);
             const bgClass = isLatest ? 'style="background: #1e3a8a;" class="text-center text-white"' : 'class="text-center table-active"';
             theadHtml += `<th colspan="5" ${bgClass}>${y}</th>`;
         });
         theadHtml += `</tr><tr>`;
-        
+
         sortedYears.forEach(y => {
             theadHtml += `
                 <th style="font-size: 8px;">Autorizado</th>
@@ -360,20 +402,20 @@ document.addEventListener('DOMContentLoaded', function () {
         theadHtml += `</tr>`;
         popTab('thead-sucesso', theadHtml);
 
-        const pS = (v) => parseFloat(v.toString().replace(' B', '').replace(/\./g, '').replace(',', '.'));
-        const pFull = (v) => fmtFull(pS(v) * 1e9);
+        const pS = (v) => parseFloat(v.toString().replace(' mi', '').replace(/\./g, '').replace(',', '.'));
+        const pFull = (v) => fmtFull(pS(v) * 1e6);
 
         // calculate totals per year
         let totals = {};
         sortedYears.forEach(y => { totals[y] = { a: 0, e: 0, l: 0 }; });
 
-        expenseGroups.slice(0,6).forEach(g => {
+        expenseGroups.slice(0, 6).forEach(g => {
             sortedYears.forEach(y => {
                 const item = sucessTableData.find(d => d.ano === parseInt(y) && d.grupo === g);
-                if(item) {
-                     totals[y].a += pS(item.aut||0);
-                     totals[y].e += pS(item.emp||0);
-                     totals[y].l += pS(item.liq||0);
+                if (item) {
+                    totals[y].a += pS(item.aut || 0);
+                    totals[y].e += pS(item.emp || 0);
+                    totals[y].l += pS(item.liq || 0);
                 }
             });
         });
@@ -382,16 +424,16 @@ document.addEventListener('DOMContentLoaded', function () {
         sortedYears.forEach(y => {
             const t = totals[y];
             tbodyHtml += `
-                <td title="${fmtFull(t.a * 1e9)}">${t.a.toFixed(2).replace('.', ',')} B</td>
-                <td title="${fmtFull(t.e * 1e9)}">${t.e.toFixed(2).replace('.', ',')} B</td>
-                <td title="${fmtFull(t.l * 1e9)}">${t.l.toFixed(2).replace('.', ',')} B</td>
+                <td title="${fmtFull(t.a * 1e6)}">${t.a.toFixed(2).replace('.', ',')} mi</td>
+                <td title="${fmtFull(t.e * 1e6)}">${t.e.toFixed(2).replace('.', ',')} mi</td>
+                <td title="${fmtFull(t.l * 1e6)}">${t.l.toFixed(2).replace('.', ',')} mi</td>
                 <td title="Eficiência Empenho: ${((t.e / t.a) * 100).toFixed(1)}%">${((t.e / t.a) * 100).toFixed(1).replace('.', ',')}%</td>
                 <td title="Eficiência Liquidação: ${((t.l / t.a) * 100).toFixed(1)}%">${((t.l / t.a) * 100).toFixed(1).replace('.', ',')}%</td>
             `;
         });
         tbodyHtml += `</tr>`;
 
-        expenseGroups.slice(0,6).forEach(g => {
+        expenseGroups.slice(0, 6).forEach(g => {
             tbodyHtml += `<tr><td style="text-align:left; font-weight:600;" title="${g}">${g}</td>`;
             sortedYears.forEach(y => {
                 const item = sucessTableData.find(d => d.ano === parseInt(y) && d.grupo === g);
@@ -409,10 +451,10 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             tbodyHtml += `</tr>`;
         });
-        
+
         popTab('table-sucesso-detalhado', tbodyHtml);
     }
-    
+
     renderSucessoTable(['2025', '2026']); // Render inicial
 
     // C. Comparativo Despesa Table
@@ -461,8 +503,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // D. Disponibilidade Table
     popTab('table-dispo', dispoData.categories.map((cat, i) => {
-        const fullVal = dispoData.values[i] * 1e9;
-        return `<tr><td style="text-align:left;" title="${cat}">${cat}</td><td class="text-end fw-bold" title="${fmtFull(fullVal)}">R$ ${dispoData.values[i]} B</td></tr>`;
+        const val = dispoData.values[i];
+        return `<tr><td style="text-align:left;" title="${cat}">${cat}</td><td class="text-end fw-bold" title="${fmtFull(val)}">${fmtFull(val)}</td></tr>`;
     }).join(''));
 
     // --- Handlers ---
@@ -529,13 +571,59 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    document.getElementById('btn-filtrar')?.addEventListener('click', function() {
+    function updateTopCards(selectedYears = ['2026']) {
+        const sorted = [...selectedYears].sort((a, b) => b - a);
+        const latestYear = sorted[0] || '2026';
+        const prevYear = (parseInt(latestYear) - 1).toString();
+        const suffix = latestYear.slice(-2);
+        const prevSuffix = prevYear.slice(-2);
+
+        // 1. Autorizado Total (Latest)
+        let totalAut = 0, totalLiq = 0, totalPrevLiq = 0;
+        poDataDetailed.forEach(d => {
+            totalAut += (d['a' + suffix] || 0);
+            totalLiq += (d['l' + suffix] || 0);
+            totalPrevLiq += (d['l' + prevSuffix] || 0);
+        });
+
+        document.getElementById('top-card-autorizado').innerText = (totalAut / 1e6).toFixed(2).replace('.', ',') + " mi";
+
+        // 2. Disponível sem Reserva (Calculado como % do Autorizado para fazer sentido no dashboard)
+        const dispoVal = dispoData.values[1];
+        const dispoPerc = totalAut > 0 ? (dispoVal / totalAut) * 100 : 0;
+        document.getElementById('top-card-dispo').innerText = dispoPerc.toFixed(2).replace('.', ',') + " %";
+
+        // 3. Sucesso do Planejamento Orçamentário (% Liq / Aut)
+        const sucessoPerc = totalAut > 0 ? (totalLiq / totalAut) * 100 : 0;
+        document.getElementById('top-card-sucesso').innerText = sucessoPerc.toFixed(2).replace('.', ',') + " %";
+
+        // 4. Comparativo (% Var Liq vs Prev Year)
+        const compVar = totalPrevLiq > 0 ? ((totalLiq - totalPrevLiq) / totalPrevLiq) * 100 : 0;
+        const compEl = document.getElementById('top-card-comparativo');
+        compEl.innerText = (compVar >= 0 ? '+' : '') + compVar.toFixed(2).replace('.', ',') + " %";
+        compEl.className = 'value ' + (compVar >= 0 ? 'variation-up' : 'variation-down');
+
+        // 5. PO de Maior liquidação
+        let topPO = { po: '-', val: 0 };
+        poDataDetailed.forEach(d => {
+            const val = d['l' + suffix] || 0;
+            if (val > topPO.val) {
+                topPO = { po: d.po, val: val };
+            }
+        });
+        document.getElementById('top-card-po-valor').innerText = "R$ " + (topPO.val / 1e6).toFixed(2).replace('.', ',') + " mi";
+        document.getElementById('top-card-po-nome').innerText = topPO.po;
+        document.getElementById('top-card-po-nome').title = topPO.po;
+    }
+
+    document.getElementById('btn-filtrar')?.addEventListener('click', function () {
         updateChips();
         const selectedYears = Array.from(filterRefs.ano.selectedOptions).map(opt => opt.value).filter(v => v !== '');
         const yearsToUse = selectedYears.length > 0 ? selectedYears : ['2026'];
-        
+
         if (successChart) successChart.setOption(getSuccessChartOptions(yearsToUse));
-        renderSucessoTable(yearsToUse); // Atualiza a tabela com os anos filtrados
+        renderSucessoTable(yearsToUse);
+        updateTopCards(yearsToUse); // Update indicators
     });
     document.getElementById('btn-restaurar')?.addEventListener('click', function () {
         Object.keys(filterRefs).forEach(key => {
@@ -556,8 +644,9 @@ document.addEventListener('DOMContentLoaded', function () {
         updateChips();
         if (successChart) successChart.setOption(getSuccessChartOptions(['2026']));
         renderSucessoTable(['2026']);
+        updateTopCards(['2026']); // Reset indicators
     });
-    
+
     // Inicializar Choices.js Premium
     window.choicesMap = new Map();
     document.querySelectorAll('select.custom-select-filter').forEach(el => {
@@ -573,4 +662,5 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     updateChips();
+    updateTopCards(['2025', '2026']); // Initial call
 });
