@@ -181,7 +181,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 diffData.push(Math.max(0, e - l));
             });
 
-            // 1. Liquidado (Base da Pilha)
+            // 1. Liquidado (Base da Pilha) dasdasddasdsadsasa
+
             series.push({
                 name: `${year} (Liquidado)`,
                 type: 'bar',
@@ -189,13 +190,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 data: liqData,
                 itemStyle: { color: colors.liq, borderRadius: [0, 0, 0, 0] },
                 barMaxWidth: 20,
-                label: { 
-                    show: true, 
-                    position: 'insideRight', 
+                label: {
+                    show: true,
+                    position: 'insideRight',
                     formatter: (p) => p.value > 15 ? (p.value.toFixed(1) + '%') : '', // Só mostra se houver espaço
-                    fontSize: 9, 
-                    fontWeight: 'bold', 
-                    color: '#fff' 
+                    fontSize: 9,
+                    fontWeight: 'bold',
+                    color: '#fff'
                 }
             });
 
@@ -207,13 +208,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 data: diffData,
                 itemStyle: { color: colors.emp, borderRadius: [0, 4, 4, 0] },
                 barMaxWidth: 20,
-                label: { 
-                    show: true, 
-                    position: 'right', 
-                    formatter: (p) => p.value > 0 ? (p.value.toFixed(1) + '%') : '', 
-                    fontSize: 9, 
-                    fontWeight: 'bold', 
-                    color: '#64748b' 
+                label: {
+                    show: true,
+                    position: 'right',
+                    formatter: (p) => p.value > 0 ? (p.value.toFixed(1) + '%') : '',
+                    fontSize: 9,
+                    fontWeight: 'bold',
+                    color: '#64748b'
                 }
             });
         });
@@ -227,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const seriesName = p.seriesName;
                     const yearMatch = seriesName.match(/\d{4}/);
                     const year = yearMatch ? yearMatch[0] : '';
-                    
+
                     // Buscar o item correspondente de Empenhado e Liquidado para este ano
                     const item = sucessTableData.find(d => d.ano === parseInt(year) && d.grupo === catName);
                     if (!item) return '';
