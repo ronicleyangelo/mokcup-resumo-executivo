@@ -712,14 +712,14 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Mock de dados por ano e UO ---
     const budgetByYearUO = {
         '2026': {
-            '27101 - SEP': { disponivel: 3.0, autorizado: 16.8, liquidado: 3.51 },
+            '27101 - SEP': { disponivel: 1.5, autorizado: 16.8, liquidado: 3.3432 },
             '2601 - SEC. EDUCAÇÃO': { disponivel: 18.5, autorizado: 32.8, liquidado: 16.9 },
             '2301 - SEC. SAÚDE': { disponivel: 12.3, autorizado: 28.6, liquidado: 14.1 },
             '2401 - SEC. SEGURANÇA': { disponivel: 8.7, autorizado: 18.4, liquidado: 9.2 },
-            '__all__': { disponivel: 3.0, autorizado: 110.5, liquidado: 3.51 }
+            '__all__': { disponivel: 1.5, autorizado: 110.5, liquidado: 3.3432 }
         },
         '2025': {
-            '27101 - SEP': { disponivel: 24.5, autorizado: 45.0, liquidado: 18.2 },
+            '27101 - SEP': { disponivel: 24.5, autorizado: 45.0, liquidado: 16.92 },
             '2601 - SEC. EDUCAÇÃO': { disponivel: 15.0, autorizado: 28.5, liquidado: 13.5 },
             '2301 - SEC. SAÚDE': { disponivel: 11.2, autorizado: 25.0, liquidado: 11.8 },
             '2401 - SEC. SEGURANÇA': { disponivel: 6.9, autorizado: 15.5, liquidado: 7.8 },
@@ -790,12 +790,12 @@ document.addEventListener('DOMContentLoaded', function () {
         // 5. Injeta nos cards
         const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-        setEl('val-disponivel', yearData.disponivel.toFixed(2).replace('.', ',') + ' B');
-        setEl('val-sucesso', sucesso.toFixed(2).replace('.', ',') + '%');
-        setEl('val-comparativo', compSinal + comparativo.toFixed(2).replace('.', ',') + '%');
-        setEl('sub-comparativo', 'vs. ' + prevYear);
-        setEl('val-po-valor', fmtB(topPO.valor));
-        setEl('val-po-nome', topPO.nome);
+        setEl('top-card-autorizado', yearData.autorizado.toFixed(2).replace('.', ',') + ' B');
+        setEl('top-card-dispo', yearData.disponivel.toFixed(2).replace('.', ',') + ' M');
+        setEl('top-card-sucesso', sucesso.toFixed(1).replace('.', ',') + '%');
+        setEl('top-card-comparativo', compSinal + comparativo.toFixed(2).replace('.', ',') + '%');
+        setEl('top-card-po-valor', fmtB(topPO.valor));
+        setEl('top-card-po-nome', topPO.nome);
     }
 
     document.getElementById('btn-filtrar')?.addEventListener('click', function () {

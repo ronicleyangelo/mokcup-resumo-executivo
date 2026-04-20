@@ -59,6 +59,10 @@ body {
     background: linear-gradient(135deg, #1e3a8a, #1e293b); /* Deep Blue */
 }
 
+.number-box.realizada-prevista {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7); /* Sky Blue */
+}
+
 .number-box.liquidada-autorizada {
     background: linear-gradient(135deg, #a372c4, #8b5cf6); /* Purple */
 }
