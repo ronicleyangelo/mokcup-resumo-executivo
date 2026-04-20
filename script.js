@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Mock Data ---
     const dispoData = {
         categories: ['Disponível', 'Disponível sem Reserva', 'Disponível com Reserva', 'Empenhado a Liquidar'],
-        values: [32.03, 25.10, 6.93, 15.45]
+        values: [3.0, 1.5, 1.5, 10.7] // Valores Baseados no total 2026: Aut 17 - Emp 14 = 3 mi | Emp 14 - Liq 3.5 = 10.5 mi
     };
 
     const expenseGroups = [
@@ -12,36 +12,74 @@ document.addEventListener('DOMContentLoaded', function () {
     ];
 
     const poDataDetailed = [
-        { po: '000001 - N. DEF.', o25: 450, a25: 420, e25: 380, l25: 250, l24: 220, o26: 480, a26: 450, e26: 350, l26: 300 },
-        { po: '003339 - SEP', o25: 8200, a25: 9100, e25: 8500, l25: 5200, l24: 4800, o26: 8500, a26: 9200, e26: 8800, l26: 5500 },
-        { po: '002778 - TI', o25: 6100, a25: 6100, e25: 5800, l25: 3100, l24: 2900, o26: 6200, a26: 6150, e26: 5900, l26: 3400 },
-        { po: '001676 - ADM. UNID', o25: 3500, a25: 4200, e25: 3100, l25: 1200, l24: 1500, o26: 3800, a26: 4400, e26: 3500, l26: 1800 },
-        { po: '000002 - D. OBRIG.', o25: 28000, a25: 28000, e25: 25000, l25: 18000, l24: 17000, o26: 30000, a26: 30000, e26: 28000, l26: 22000 },
-        { po: '003213 - SEGER', o25: 1200, a25: 1200, e25: 1100, l25: 900, l24: 850, o26: 1300, a26: 1250, e26: 1150, l26: 1050 }
+        { po: '000001 - Não Definido', l24: 11771630, o25: 13000000, a25: 14000000, e25: 14000000, l25: 14000000, o26: 13000000, a26: 13000000, e26: 12000000, l26: 2972200 },
+        { po: '003339 - REFORMA E ADEQUAÇÃO DA NOVA SEDE DA SEP', l24: 0, o25: 0, a25: 2200000, e25: 2200000, l25: 844000, o26: 0, a26: 449000, e26: 0, l26: 0 },
+        { po: '002778 - CONTRATAÇÃO DE SERVIÇOS DE APOIO DE TI', l24: 539840, o25: 436000, a25: 890000, e25: 778000, l25: 708000, o26: 579000, a26: 579000, e26: 492000, l26: 140680 },
+        { po: '001676 - ADMINISTRAÇÃO DA UNIDADE', l24: 1174000, o25: 1100000, a25: 986000, e25: 827000, l25: 690000, o26: 1200000, a26: 1100000, e26: 439000, l26: 103362 },
+        { po: '000002 - Despesa Obrigatória', l24: 594000, o25: 632000, a25: 718000, e25: 674000, l25: 674000, o26: 749000, a26: 749000, e26: 214000, l26: 173555 },
+        { po: '003213 - CONTRATOS DE MÃO DE OBRA - SEGER', l24: 0, o25: 326000, a25: 632000, e25: 632000, l25: 561000, o26: 650000, a26: 699000, e26: 699000, l26: 110864 },
+        { po: '001364 - Audiências Públicas', l24: 194932, o25: 260000, a25: 181000, e25: 180000, l25: 180000, o26: 437000, a26: 486000, e26: 0, l26: 0 },
+        { po: '003193 - PROJETO ESTADO PRESENTE: PESQUISADOR E AVALIADOR', l24: 218000, o25: 109000, a25: 109000, e25: 109000, l25: 109000, o26: 0, a26: 0, e26: 0, l26: 0 },
+        { po: '001580 - DESENVOLVIMIENTO DE AÇÕES DE CIÊNCIA, TECNOLOGIA E INOVAÇÃO', l24: 0, o25: 48000, a25: 42000, e25: 42000, l25: 42000, o26: 132000, a26: 132000, e26: 11134, l26: 11134 },
+        { po: '001894 - CAPACITAÇÕES DOS GERENTES DE PROJETOS', l24: 24465, o25: 30000, a25: 30000, e25: 12000, l25: 12000, o26: 30000, a26: 30000, e26: 0, l26: 0 },
+        { po: '001709 - CAPACITAÇÃO EM GESTÃO ESTRATÉGICA', l24: 0, o25: 25000, a25: 25000, e25: 0, l25: 0, o26: 30000, a26: 30000, e26: 0, l26: 0 },
+        { po: '002611 - AQUISIÇÃO DE EQUIPAMENTOS E MATERIAIS DE TI', l24: 350000, o25: 0, a25: 191000, e25: 164000, l25: 0, o26: 0, a26: 0, e26: 0, l26: 0 },
+        { po: '002921 - AQUISIÇÃO DE MOBILIÁRIOS DIVERSOS E DIVISÓRIAS', l24: 358696, o25: 0, a25: 34000, e25: 16000, l25: 0, o26: 0, a26: 12000, e26: 10450, l26: 10450 },
+        { po: '002922 - AQUISIÇÃO DE APARELHOS DE AR-CONDICIONADO', l24: 0, o25: 0, a25: 80000, e25: 60000, l25: 0, o26: 0, a26: 0, e26: 0, l26: 0 }
     ];
-    const poList = [...poDataDetailed].sort((a, b) => b.a26 - a.a26);
+
+    const poList = [...poDataDetailed].sort((a, b) => b.l26 - a.l26);
+
+    // Lista filtrada para o gráfico: top 5 POs (incluindo SEP)
+    const sepPO = poDataDetailed.find(p => p.po.includes('003339'));
+    const poChartList = [...poDataDetailed]
+        .sort((a, b) => b.o26 - a.o26)
+        .filter(p => !p.po.includes('003339'))
+        .slice(0, 4);
+    if (sepPO) poChartList.push(sepPO);
+    poChartList.sort((a, b) => a.o26 - b.o26);
+
+    // Grupos de despesa para SEP (apenas 1, 3, 4)
+    const sepExpenseGroups = [
+        '1 - PESSOAL E ENCARGOS SOCIAIS',
+        '3 - OUTRAS DESPESAS CORRENTES',
+        '4 - INVESTIMENTOS'
+    ];
 
     const sucessTableData = [
-        { ano: 2026, grupo: expenseGroups[0], aut: '14,20 B', emp: '13,50 B', liq: '8,20 B', p_emp: '95,1%', p_liq: '57,7%' },
-        { ano: 2026, grupo: expenseGroups[1], aut: '2,10 B', emp: '1,85 B', liq: '1,73 B', p_emp: '88,0%', p_liq: '82,4%' },
-        { ano: 2026, grupo: expenseGroups[2], aut: '8,40 B', emp: '7,76 B', liq: '5,88 B', p_emp: '92,4%', p_liq: '70,1%' },
-        { ano: 2026, grupo: expenseGroups[3], aut: '10,50 B', emp: '8,40 B', liq: '3,20 B', p_emp: '80,0%', p_liq: '30,5%' },
-        { ano: 2026, grupo: expenseGroups[4], aut: '0,50 B', emp: '0,38 B', liq: '0,23 B', p_emp: '76,0%', p_liq: '46,0%' },
-        { ano: 2026, grupo: expenseGroups[5], aut: '2,20 B', emp: '2,20 B', liq: '2,15 B', p_emp: '100,0%', p_liq: '97,7%' },
-        { ano: 2026, grupo: expenseGroups[6], aut: '0,00 B', emp: '0,00 B', liq: '0,00 B', p_emp: '0,0%', p_liq: '0,0%' },
-        
-        { ano: 2025, grupo: expenseGroups[0], aut: '12,50 B', emp: '12,10 B', liq: '11,80 B', p_emp: '96,8%', p_liq: '94,4%' },
-        { ano: 2025, grupo: expenseGroups[1], aut: '2,00 B', emp: '1,80 B', liq: '1,70 B', p_emp: '90,0%', p_liq: '85,0%' },
-        { ano: 2026, grupo: expenseGroups[3], aut: '0,00 B', emp: '0,00 B', liq: '0,00 B', p_emp: '0,0%', p_liq: '0,0%' },
-        { ano: 2025, grupo: expenseGroups[3], aut: '0,00 B', emp: '0,00 B', liq: '0,00 B', p_emp: '0,0%', p_liq: '0,0%' },
-        
-        { ano: 2024, grupo: expenseGroups[0], aut: '11,50 B', emp: '10,58 B', liq: '10,12 B', p_emp: '92,0%', p_liq: '88,0%' },
-        { ano: 2023, grupo: expenseGroups[0], aut: '10,50 B', emp: '9,24 B', liq: '8,92 B', p_emp: '88,0%', p_liq: '85,0%' }
+        // 2023
+        { ano: 2023, grupo: '1 - PESSOAL E ENCARGOS SOCIAIS', aut: 11000000, emp: 10800000, liq: 10800000, p_emp: '98,18%', p_liq: '98,18%' },
+        { ano: 2023, grupo: '3 - OUTRAS DESPESAS CORRENTES', aut: 5500000, emp: 5200000, liq: 4500000, p_emp: '94,55%', p_liq: '81,82%' },
+        { ano: 2023, grupo: '4 - INVESTIMENTOS', aut: 1200000, emp: 900000, liq: 850000, p_emp: '75,00%', p_liq: '70,83%' },
+        // 2024
+        { ano: 2024, grupo: '1 - PESSOAL E ENCARGOS SOCIAIS', aut: 12200000, emp: 12000000, liq: 11900000, p_emp: '98,36%', p_liq: '97,54%' },
+        { ano: 2024, grupo: '3 - OUTRAS DESPESAS CORRENTES', aut: 6500000, emp: 6100000, liq: 5500000, p_emp: '93,85%', p_liq: '84,62%' },
+        { ano: 2024, grupo: '4 - INVESTIMENTOS', aut: 800000, emp: 750000, liq: 600000, p_emp: '93,75%', p_liq: '75,00%' },
+        // 2025
+        { ano: 2025, grupo: '1 - PESSOAL E ENCARGOS SOCIAIS', aut: 12800000, emp: 12500000, liq: 12500000, p_emp: '97,66%', p_liq: '97,66%' },
+        { ano: 2025, grupo: '3 - OUTRAS DESPESAS CORRENTES', aut: 7200000, emp: 6800000, liq: 5100000, p_emp: '94,44%', p_liq: '70,83%' },
+        { ano: 2025, grupo: '4 - INVESTIMENTOS', aut: 450000, emp: 380000, liq: 120000, p_emp: '84,44%', p_liq: '26,67%' },
+        // 2026
+        { ano: 2026, grupo: '1 - PESSOAL E ENCARGOS SOCIAIS', aut: 13000000, emp: 12000000, liq: 2900000, p_emp: '92,31%', p_liq: '22,31%' },
+        { ano: 2026, grupo: '3 - OUTRAS DESPESAS CORRENTES', aut: 4400000, emp: 1900000, liq: 565000, p_emp: '43,18%', p_liq: '12,84%' },
+        { ano: 2026, grupo: '4 - INVESTIMENTOS', aut: 92000, emp: 10000, liq: 10000, p_emp: '10,87%', p_liq: '10,87%' }
     ];
 
-    const fmtB = (v) => "R$ " + (v / 1000000000).toFixed(2) + " B";
+
+    const fmtB = (v) => {
+        if (v === 0) return 'R$ 0';
+        const absV = Math.abs(v);
+        if (absV >= 1000000) {
+            return 'R$ ' + (v / 1000000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 }) + ' mi';
+        }
+        if (absV >= 1000) {
+            return 'R$ ' + (v / 1000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' mil';
+        }
+        return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0 });
+    };
+    const fB = (v) => fmtB(v);
+    const getF = (v) => fmtB(v);
     const fmtFull = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 });
-    const fV = (v) => v.toFixed(2) + " B";
     const popTab = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
     // --- Shared Premium Tooltip ---
     const buildTooltip = (title, subtitle, series, w, dataPointIndex, seriesIndex = null) => {
@@ -69,115 +107,192 @@ document.addEventListener('DOMContentLoaded', function () {
         chart: { type: 'bar', height: '100%', toolbar: { show: false } },
         colors: ['#56c0d8', '#ef8b9c', '#56a380', '#a372c4'],
         plotOptions: { bar: { borderRadius: 0, horizontal: false, distributed: true, dataLabels: { position: 'top' } } },
-        dataLabels: { enabled: false },
+        dataLabels: {
+            enabled: true,
+            formatter: (val) => fmtFull(val * 1e6),
+            style: { fontSize: '9px', fontWeight: 700, colors: ['#334155'] },
+            offsetY: -22
+        },
         xaxis: {
             categories: dispoData.categories,
             labels: { rotate: 0, trim: true, style: { fontSize: '9px', fontWeight: 600 } }
         },
-        yaxis: { show: true, labels: { formatter: (val) => "R$ " + val + " B" } },
+        yaxis: {
+            show: true,
+            labels: {
+                formatter: (val) => 'R$ ' + (val * 1e6).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+            }
+        },
         grid: { show: true, borderColor: '#f1f1f1' },
-        legend: { show: true, position: 'bottom', markers: { radius: 4 } },
+        legend: { show: true, position: 'bottom', markers: { shape: 'circle', radius: 12 } },
         tooltip: {
             shared: false,
-            custom: function ({ series, seriesIndex, dataPointIndex, w }) {
-                const label = dispoData.categories[dataPointIndex];
-                return buildTooltip(label, "Disponibilidade Financeira", series, w, dataPointIndex, seriesIndex);
+            custom: function ({ dataPointIndex }) {
+                const vals = dispoData.values;
+                const fmt = (v) => 'R$ ' + (v * 1e6).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                return `<div class="premium-tooltip">
+                    <div class="tooltip-header">
+                        <div class="uo-info">UO: 27101 - SEP</div>
+                        <div class="exercise-info">Exercício: 2026</div>
+                    </div>
+                    <div class="tooltip-body">
+                        <div class="tooltip-row active"><span class="label">Disponível:</span><span class="val">${fmt(vals[0])}</span></div>
+                        <div class="tooltip-row active"><span class="label">Disponível sem Reserva:</span><span class="val">${fmt(vals[1])}</span></div>
+                        <div class="tooltip-row active"><span class="label">Disponível com Reserva:</span><span class="val">${fmt(vals[2])}</span></div>
+                        <div class="tooltip-row active"><span class="label">Empenhado a Liquidar:</span><span class="val">${fmt(vals[3])}</span></div>
+                    </div>
+                </div>`;
             }
         }
     }).render();
 
-    function getSuccessChartOptions(selectedYears = ['2026']) {
-        const categories = expenseGroups.slice(0, 6);
+    function getSuccessChartOptions(years = ['2026']) {
+        const latestYear = years[years.length - 1];
+
+        // Sort categories by Liquidado value of the latest year
+        // In ECharts horizontal bars, yAxis order is bottom-to-top, so we sort ascending to get highest at top.
+        const sortedCategories = [...sepExpenseGroups].sort((a, b) => {
+            const itemA = sucessTableData.find(d => d.ano === parseInt(latestYear) && d.grupo === a);
+            const itemB = sucessTableData.find(d => d.ano === parseInt(latestYear) && d.grupo === b);
+            const valA = itemA ? parseFloat(itemA.p_liq.replace(',', '.').replace('%', '')) : 0;
+            const valB = itemB ? parseFloat(itemB.p_liq.replace(',', '.').replace('%', '')) : 0;
+            return valA - valB;
+        });
+
         const series = [];
-        const yearColors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444'];
-        
-        selectedYears.forEach((year, yrIdx) => {
+
+        const yearColors = {
+            '2026': { liq: '#1e40af', emp: '#93c5fd' }, // Azul Real
+            '2025': { liq: '#065f46', emp: '#a7f3d0' }, // Verde Esmeralda
+            '2024': { liq: '#9a3412', emp: '#fed7aa' }, // Abóbora Profundo
+            '2023': { liq: '#5b21b6', emp: '#ddd6fe' }  // Violeta Intenso
+        };
+
+        years.forEach(year => {
+            const colors = yearColors[year] || { emp: '#56c0d8', liq: '#ef8b9c' };
             const liqData = [];
-            const empDiffData = [];
-            const color = yearColors[yrIdx % yearColors.length];
-            
-            categories.forEach(cat => {
-                const item = sucessTableData.find(d => d.ano === parseInt(year) && d.grupo.includes(cat.split(' ')[0]));
-                const emp = item ? parseFloat(item.p_emp.toString().replace('%', '').replace(',', '.')) : 0;
-                const liq = item ? parseFloat(item.p_liq.toString().replace('%', '').replace(',', '.')) : 0;
-                
-                liqData.push(liq);
-                empDiffData.push(Math.max(0, emp - liq));
+            const diffData = []; // Empenhado - Liquidado (O saldo a liquidar)
+
+            sortedCategories.forEach(cat => {
+                const item = sucessTableData.find(d => d.ano === parseInt(year) && d.grupo === cat);
+                const l = item ? parseFloat(item.p_liq.replace(',', '.').replace('%', '')) : 0;
+                const e = item ? parseFloat(item.p_emp.replace(',', '.').replace('%', '')) : 0;
+                liqData.push(l);
+                diffData.push(Math.max(0, e - l));
             });
 
+            // 1. Liquidado (Base da Pilha)
             series.push({
                 name: `${year} (Liquidado)`,
                 type: 'bar',
-                stack: `stk_${year}`,
+                stack: year,
                 data: liqData,
-                itemStyle: { color: color },
-                label: { show: true, position: 'inside', formatter: (p) => p.value > 0 ? p.value.toFixed(1) + '%' : '', color: '#fff', fontSize: 9 }
+                itemStyle: { color: colors.liq, borderRadius: [0, 0, 0, 0] },
+                barMaxWidth: 20,
+                label: { 
+                    show: true, 
+                    position: 'insideRight', 
+                    formatter: (p) => p.value > 15 ? (p.value.toFixed(1) + '%') : '', // Só mostra se houver espaço
+                    fontSize: 9, 
+                    fontWeight: 'bold', 
+                    color: '#fff' 
+                }
             });
 
+            // 2. Empenhado (Topo da Pilha - Apenas o Saldo)
             series.push({
                 name: `${year} (Empenhado)`,
                 type: 'bar',
-                stack: `stk_${year}`,
-                data: empDiffData,
-                itemStyle: { color: color, opacity: 0.4 },
-                label: { show: true, position: 'inside', formatter: (p) => p.value > 0 ? p.value.toFixed(1) + '%' : '', color: '#fff', fontSize: 9 }
+                stack: year,
+                data: diffData,
+                itemStyle: { color: colors.emp, borderRadius: [0, 4, 4, 0] },
+                barMaxWidth: 20,
+                label: { 
+                    show: true, 
+                    position: 'right', 
+                    formatter: (p) => p.value > 0 ? (p.value.toFixed(1) + '%') : '', 
+                    fontSize: 9, 
+                    fontWeight: 'bold', 
+                    color: '#64748b' 
+                }
             });
         });
 
         return {
-            tooltip: { 
-                trigger: 'item', 
-                formatter: (p) => {
-                    const year = p.seriesName.replace(' (Liquidado)', '').replace(' (Empenhado)', '');
-                    const catName = p.name;
-                    const item = sucessTableData.find(d => d.ano === parseInt(year) && d.grupo.includes(catName.split(' ')[0]));
-                    const empVal = item ? item.p_emp : '0%';
-                    const liqVal = item ? item.p_liq : '0%';
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                formatter: (params) => {
+                    const catName = params[0].name;
+                    let rowsHtml = '';
                     
-                    return `
-                        <div class="premium-tooltip" style="min-width: 200px;">
-                            <div class="tooltip-header" style="border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 8px;">
-                                <div style="font-weight: 800; color: #1e293b; font-size: 14px;">${catName}</div>
-                                <div style="color: #64748b; font-size: 12px;">Exercício ${year}</div>
-                            </div>
-                            <div class="tooltip-body">
-                                <div class="tooltip-row active" style="margin-bottom: 5px;">
-                                    <span class="dot" style="background:${p.color}; opacity: 0.4;"></span>
-                                    <span class="label" style="font-weight: 600;">Empenhado</span>
-                                    <span class="val" style="font-weight: 800; color: #1e293b; margin-left: auto;">${empVal}</span>
-                                </div>
-                                <div class="tooltip-row active">
-                                    <span class="dot" style="background:${p.color};"></span>
-                                    <span class="label" style="font-weight: 600;">Liquidado</span>
-                                    <span class="val" style="font-weight: 800; color: #1e293b; margin-left: auto;">${liqVal}</span>
-                                </div>
-                            </div>
+                    // Agrupar por ano para somar o total empenhado (p_liq + diff)
+                    const yearTotals = {};
+                    params.forEach(p => {
+                        const yearMatch = p.seriesName.match(/\d{4}/);
+                        const year = yearMatch ? yearMatch[0] : 'unknown';
+                        if (!yearTotals[year]) yearTotals[year] = { liq: 0, emp: 0, colors: {} };
+                        
+                        if (p.seriesName.includes('Liquidado')) {
+                            yearTotals[year].liq = p.value;
+                            yearTotals[year].colors.liq = p.color;
+                        } else {
+                            yearTotals[year].emp = p.value; // Isto é o diff
+                            yearTotals[year].colors.emp = p.color;
+                        }
+                    });
+
+                    Object.keys(yearTotals).sort((a,b) => b-a).forEach(y => {
+                        const t = yearTotals[y];
+                        const totalEmp = t.liq + t.emp;
+                        
+                        // Ordem: Empenhado Total primeiro, depois Liquidado (conforme print)
+                        rowsHtml += `<div class="tooltip-row active">
+                            <span class="dot" style="background:${t.colors.emp}"></span>
+                            <span class="label">${y} (Empenhado):</span>
+                            <span class="val" style="font-weight:700;">${totalEmp.toFixed(1).replace('.', ',')}%</span>
                         </div>`;
+                        rowsHtml += `<div class="tooltip-row active">
+                            <span class="dot" style="background:${t.colors.liq}"></span>
+                            <span class="label">${y} (Liquidado):</span>
+                            <span class="val" style="font-weight:700;">${t.liq.toFixed(1).replace('.', ',')}%</span>
+                        </div>`;
+                    });
+
+                    return `<div class="premium-tooltip">
+                        <div class="tooltip-header"><div class="uo-info">${catName}</div></div>
+                        <div class="tooltip-body">${rowsHtml}</div>
+                    </div>`;
                 }
             },
-            legend: { 
-                type: 'scroll',
-                bottom: '0%',
-                textStyle: { fontSize: 10, fontWeight: 600 }
-            }, 
-            grid: { top: '5%', bottom: '15%', left: '3%', right: '5%', containLabel: true },
-            xAxis: { type: 'value', max: 100, axisLabel: { formatter: '{value}%' } },
-            yAxis: { type: 'category', data: categories, axisLabel: { fontWeight: 'bold', fontSize: 9 } },
-            dataZoom: [
-                { type: 'inside', yAxisIndex: 0, start: 0, end: 100 },
-                { 
-                    type: 'slider', 
-                    yAxisIndex: 0, 
-                    start: 0, 
-                    end: 100, 
-                    width: 15, 
-                    right: 5, 
-                    borderColor: 'transparent',
-                    fillerColor: 'rgba(59, 130, 246, 0.2)',
-                    handleSize: '80%',
-                    showDetail: false
-                }
-            ],
+            legend: {
+                bottom: 0,
+                icon: 'circle',
+                textStyle: { fontSize: 11, fontWeight: 600 }
+            },
+            grid: { top: '5%', bottom: '15%', left: '3%', right: '15%', containLabel: true },
+            xAxis: {
+                type: 'value',
+                max: 100,
+                axisLabel: {
+                    show: true,
+                    formatter: '{value}%',
+                    color: '#94a3b8',
+                    fontSize: 10
+                },
+                splitLine: {
+                    show: true,
+                    lineStyle: { type: 'dashed', color: '#e2e8f0' }
+                },
+                axisLine: { show: false }
+            },
+            yAxis: {
+                type: 'category',
+                data: sortedCategories,
+                axisLabel: { fontSize: 9, fontWeight: 700, color: '#475569' },
+                axisLine: { lineStyle: { color: '#e2e8f0' } },
+                axisTick: { show: false }
+            },
             series: series
         };
     }
@@ -194,80 +309,158 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // 3. Comparativo Despesa
+    // 3. Comparativo Despesa — SEP (grupos 1, 3, 4)
     const compData = [
-        { g: expenseGroups[0], o25: 12.00, a25: 12.50, e25: 12.10, l25: 11.80, o26: 15.00, a26: 14.20, e26: 13.50, l26: 8.20 },
-        { g: expenseGroups[1], o25: 2.00, a25: 2.10, e25: 1.80, l25: 1.70, o26: 2.20, a26: 2.10, e26: 1.85, l26: 1.73 },
-        { g: expenseGroups[2], o25: 7.00, a25: 7.80, e25: 7.10, l25: 6.40, o26: 8.50, a26: 8.40, e26: 7.76, l26: 5.88 },
-        { g: expenseGroups[3], o25: 8.00, a25: 8.40, e25: 7.20, l25: 5.10, o26: 10.50, a26: 10.10, e26: 8.40, l26: 3.20 },
-        { g: expenseGroups[4], o25: 0.40, a25: 0.45, e25: 0.35, l25: 0.20, o26: 0.60, a26: 0.50, e26: 0.38, l26: 0.23 },
-        { g: expenseGroups[5], o25: 2.00, a25: 2.05, e25: 1.95, l25: 1.90, o26: 2.50, a26: 2.20, e26: 2.20, l26: 2.15 },
-        { g: expenseGroups[6], o25: 0.50, a25: 0.00, e25: 0.00, l25: 0.00, o26: 0.80, a26: 0.00, e26: 0.00, l26: 0.00 }
+        {
+            g: '1 - PESSOAL E ENCARGOS SOCIAIS',
+            l24: 11582997,
+            o25: 12700371, a25: 12700371, e25: 12337050, l25: 12337050,
+            o26: 12919749, a26: 12919749, e26: 12317900, l26: 2932617
+        },
+        {
+            g: '3 - OUTRAS DESPESAS CORRENTES',
+            l24: 2859809,
+            o25: 3130541, a25: 7432541, e25: 7015040, l25: 5340694,
+            o26: 3958370, a26: 4407267, e26: 1894410, l26: 564859
+        },
+        {
+            g: '4 - INVESTIMENTOS',
+            l24: 723407,
+            o25: 100000, a25: 404428, e25: 324923.45, l25: 73281.15,
+            o26: 92000, a26: 92000, e26: 10082.70, l26: 10082.70
+        }
     ];
 
-    compData.sort((a, b) => b.l26 - a.l26);
+    const fmtBRL = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 });
 
     new ApexCharts(document.querySelector("#chart-comparativo"), {
         series: [
-            { name: 'Liquidado 2025', data: compData.map(d => d.l25) },
-            { name: 'Liquidado 2026', data: compData.map(d => d.l26) }
+            { name: '2025', data: compData.map(d => d.l25) },
+            { name: '2026', data: compData.map(d => d.l26) }
         ],
         chart: { type: 'bar', height: '100%', toolbar: { show: false } },
         colors: ['#56c0d8', '#ef8b9c'],
         plotOptions: { bar: { borderRadius: 0, columnWidth: '70%', dataLabels: { position: 'top' } } },
-        dataLabels: { enabled: false },
+        dataLabels: {
+            enabled: true,
+            formatter: (v) => fmtFull(v),
+            style: { fontSize: '8px', fontWeight: 700, colors: ['#334155'] },
+            offsetY: -18
+        },
         xaxis: {
             categories: compData.map(d => d.g),
             labels: { rotate: 0, trim: true, style: { fontSize: '9px', fontWeight: 600 } }
         },
         yaxis: {
             show: true,
-            labels: { style: { fontSize: '9px' }, formatter: (val) => "R$ " + val + " B" }
+            labels: {
+                style: { fontSize: '9px' },
+                formatter: (val) => fmtBRL(val)
+            }
         },
         grid: { show: true, borderColor: '#f1f1f1', strokeDashArray: 4 },
-        legend: { position: 'bottom', horizontalAlign: 'center', offsetY: 0, markers: { radius: 4 } },
+        legend: { position: 'bottom', horizontalAlign: 'center', offsetY: 0, markers: { shape: 'circle', radius: 12 } },
         tooltip: {
             shared: false,
-            custom: function ({ series, seriesIndex, dataPointIndex, w }) {
-                const group = compData[dataPointIndex].g;
-                return buildTooltip(group, "Comparativo Realizado", series, w, dataPointIndex, seriesIndex);
+            custom: function ({ seriesIndex, dataPointIndex }) {
+                const d = compData[dataPointIndex];
+                const ano = seriesIndex === 0 ? '2025' : '2026';
+                const l = seriesIndex === 0 ? d.l25 : d.l26;
+                return `<div class="premium-tooltip">
+                    <div class="tooltip-header">
+                        <div class="uo-info">${d.g}</div>
+                        <div class="exercise-info">Exercício ${ano}</div>
+                    </div>
+                    <div class="tooltip-body">
+                        <div class="tooltip-row active">
+                            <span class="label">Liquidado:</span>
+                            <span class="val">${fmtFull(l)}</span>
+                        </div>
+                    </div>
+                </div>`;
             }
         }
     }).render();
 
-    new ApexCharts(document.querySelector("#chart-po"), {
-        series: [
-            { name: 'Orçado', data: poList.map(p => p.o26 / 1e9) },
-            { name: 'Autorizado', data: poList.map(p => p.a26 / 1e9) },
-            { name: 'Empenhado', data: poList.map(p => p.e26 / 1e9) },
-            { name: 'Liquidado', data: poList.map(p => p.l26 / 1e9) }
-        ],
-        chart: { type: 'bar', height: '100%', toolbar: { show: false }, stacked: false },
-        colors: ['#cbd5e1', '#56c0d8', '#a372c4', '#1e3a8a'],
-        plotOptions: {
-            bar: {
-                horizontal: true,
-                barHeight: '85%',
-                borderRadius: 0,
-                dataLabels: { position: 'top' }
-            }
-        },
-        dataLabels: { enabled: false },
-        xaxis: {
-            categories: poList.map(p => p.po),
-            labels: { formatter: (val) => "R$ " + val + " B", style: { fontSize: '9px' } }
-        },
-        yaxis: { labels: { style: { fontSize: '9px', fontWeight: 600 } } },
-        grid: { borderColor: '#f1f1f1', strokeDashArray: 4, xaxis: { lines: { show: true } } },
-        legend: { position: 'bottom', horizontalAlign: 'center', fontSize: '11px', markers: { radius: 4 } },
-        tooltip: {
-            shared: false,
-            custom: function ({ series, seriesIndex, dataPointIndex, w }) {
-                const poName = poList[dataPointIndex].po;
-                return buildTooltip(poName, "Plano Orçamentário 2026", series, w, dataPointIndex, seriesIndex);
-            }
-        }
-    }).render();
+
+    // 4. Plano Orçamentário — ECharts com Scroll Vertical Nativo (Interno)
+    const poChartDom = document.querySelector("#chart-po");
+    if (poChartDom && typeof echarts !== 'undefined') {
+        const poChart = echarts.init(poChartDom);
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' },
+                formatter: function (params) {
+                    const poName = params[0].name;
+                    let rowsHtml = '';
+                    params.forEach(p => {
+                        rowsHtml += `<div class="tooltip-row active">
+                            <span class="label">${p.seriesName}:</span>
+                            <span class="val">${fmtFull(p.value)}</span>
+                        </div>`;
+                    });
+                    return `<div class="premium-tooltip">
+                        <div class="tooltip-header">
+                            <div class="uo-info">${poName}</div>
+                            <div class="exercise-info">Exercício: 2026</div>
+                        </div>
+                        <div class="tooltip-body">
+                            ${rowsHtml}
+                        </div>
+                    </div>`;
+                }
+            },
+            legend: { bottom: 0, icon: 'circle', textStyle: { fontSize: 10 } },
+            grid: { top: '5%', left: '3%', right: '15%', bottom: '12%', containLabel: true },
+            dataZoom: [],
+            xAxis: {
+                type: 'value',
+                axisLabel: {
+                    fontSize: 9,
+                    formatter: (v) => {
+                        if (v === 0) return 'R$ 0';
+                        if (Math.abs(v) >= 1000000) return 'R$ ' + (v / 1000000).toFixed(0).replace('.', ',') + ' mi';
+                        if (Math.abs(v) >= 1000) return 'R$ ' + (v / 1000).toFixed(0) + ' mil';
+                        return 'R$ ' + v;
+                    }
+                }
+            },
+            yAxis: {
+                type: 'category',
+                data: poChartList.map(p => p.po),
+                axisLabel: {
+                    interval: 0,
+                    fontSize: 9,
+                    formatter: (v) => v.length > 25 ? v.substring(0, 25) + '...' : v
+                }
+            },
+            series: [
+                {
+                    name: 'Orçado', type: 'bar', itemStyle: { color: '#cbd5e1' },
+                    label: { show: false },
+                    data: poChartList.map(p => p.o26)
+                },
+                {
+                    name: 'Autorizado', type: 'bar', itemStyle: { color: '#56c0d8' },
+                    label: { show: false },
+                    data: poChartList.map(p => p.a26)
+                },
+                {
+                    name: 'Empenhado', type: 'bar', itemStyle: { color: '#a372c4' },
+                    label: { show: false },
+                    data: poChartList.map(p => p.e26)
+                },
+                {
+                    name: 'Liquidado', type: 'bar', itemStyle: { color: '#1e3a8a' },
+                    label: { show: false },
+                    data: poChartList.map(p => p.l26)
+                }
+            ]
+        };
+        poChart.setOption(option);
+        window.addEventListener('resize', () => poChart.resize());
+    }
 
     // --- Tables ---
 
@@ -279,11 +472,10 @@ document.addEventListener('DOMContentLoaded', function () {
         t_o26 += d.o26; t_a26 += d.a26; t_e26 += d.e26; t_l26 += d.l26;
     });
 
-    const fM = (v) => (v / 1000000).toFixed(1) + " M";
-    const fB = (v) => (v / 1000000000).toFixed(2) + " B";
-    const getF = (v) => v > 1000000000 ? fB(v) : fM(v);
-
-    const calcVar = (curr, prev) => prev > 0 ? (((curr - prev) / prev) * 100).toFixed(1) : '0.0';
+    const calcVar = (curr, prev) => {
+        if (!prev || prev === 0) return '';
+        return (((curr - prev) / prev) * 100).toFixed(2).replace('.', ',').replace('-', '-');
+    };
     const v25T = calcVar(t_l25, t_l24);
     const v26T = calcVar(t_l26, t_l25);
 
@@ -294,12 +486,12 @@ document.addEventListener('DOMContentLoaded', function () {
         <td title="${fmtFull(t_a25)}">${fB(t_a25)}</td>
         <td title="${fmtFull(t_e25)}">${fB(t_e25)}</td>
         <td title="${fmtFull(t_l25)}">${fB(t_l25)}</td>
-        <td title="Variação Percentual: ${v25T}%">${v25T}%</td>
+        <td title="Variação Percentual: ${v25T}">${v25T ? v25T + '%' : ''}</td>
         <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(t_o26)}">${fB(t_o26)}</td>
         <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(t_a26)}">${fB(t_a26)}</td>
         <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(t_e26)}">${fB(t_e26)}</td>
         <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(t_l26)}">${fB(t_l26)}</td>
-        <td style="background:rgba(30,58,138,0.05);" title="Variação Percentual: ${v26T}%">${v26T}%</td>
+        <td style="background:rgba(30,58,138,0.05);" title="Variação Percentual: ${v26T}">${v26T ? v26T + '%' : ''}</td>
     </tr>`;
 
     poList.forEach(d => {
@@ -311,12 +503,12 @@ document.addEventListener('DOMContentLoaded', function () {
             <td style="font-size:9px;" title="${fmtFull(d.a25)}">${getF(d.a25)}</td>
             <td style="font-size:9px;" title="${fmtFull(d.e25)}">${getF(d.e25)}</td>
             <td style="font-size:9px; background:#f8fafc;" title="${fmtFull(d.l25)}">${getF(d.l25)}</td>
-            <td style="font-weight:bold;" title="Variação: ${v25}%">${v25}%</td>
+            <td style="font-weight:bold;" title="Variação: ${v25}">${v25 ? v25 + '%' : ''}</td>
             <td style="font-size:9px;" title="${fmtFull(d.o26)}">${getF(d.o26)}</td>
             <td style="font-size:9px;" title="${fmtFull(d.a26)}">${getF(d.a26)}</td>
             <td style="font-size:9px;" title="${fmtFull(d.e26)}">${getF(d.e26)}</td>
             <td style="font-size:9px; background:rgba(30,58,138,0.05); font-weight:bold; color:#1e3a8a;" title="${fmtFull(d.l26)}">${getF(d.l26)}</td>
-            <td style="font-weight:bold; background:rgba(30,58,138,0.05);" title="Variação: ${v26}%">${v26}%</td>
+            <td style="font-weight:bold; background:rgba(30,58,138,0.05);" title="Variação: ${v26}">${v26 ? v26 + '%' : ''}</td>
         </tr>`;
     });
     popTab('table-po-detalhado', tablePoHtml);
@@ -345,20 +537,19 @@ document.addEventListener('DOMContentLoaded', function () {
         theadHtml += `</tr>`;
         popTab('thead-sucesso', theadHtml);
 
-        const pS = (v) => parseFloat(v.toString().replace(' B', '').replace(/\./g, '').replace(',', '.'));
-        const pFull = (v) => fmtFull(pS(v) * 1e9);
+
 
         // calculate totals per year
         let totals = {};
         sortedYears.forEach(y => { totals[y] = { a: 0, e: 0, l: 0 }; });
 
-        expenseGroups.slice(0, 6).forEach(g => {
+        sepExpenseGroups.forEach(g => {
             sortedYears.forEach(y => {
                 const item = sucessTableData.find(d => d.ano === parseInt(y) && d.grupo === g);
                 if (item) {
-                    totals[y].a += pS(item.aut || 0);
-                    totals[y].e += pS(item.emp || 0);
-                    totals[y].l += pS(item.liq || 0);
+                    totals[y].a += item.aut || 0;
+                    totals[y].e += item.emp || 0;
+                    totals[y].l += item.liq || 0;
                 }
             });
         });
@@ -367,24 +558,24 @@ document.addEventListener('DOMContentLoaded', function () {
         sortedYears.forEach(y => {
             const t = totals[y];
             tbodyHtml += `
-                <td title="${fmtFull(t.a * 1e9)}">${t.a.toFixed(2).replace('.', ',')} B</td>
-                <td title="${fmtFull(t.e * 1e9)}">${t.e.toFixed(2).replace('.', ',')} B</td>
-                <td title="${fmtFull(t.l * 1e9)}">${t.l.toFixed(2).replace('.', ',')} B</td>
+                <td title="${fmtFull(t.a)}">${fB(t.a)}</td>
+                <td title="${fmtFull(t.e)}">${fB(t.e)}</td>
+                <td title="${fmtFull(t.l)}">${fB(t.l)}</td>
                 <td title="Eficiência Empenho: ${((t.e / t.a) * 100).toFixed(1)}%">${((t.e / t.a) * 100).toFixed(1).replace('.', ',')}%</td>
                 <td title="Eficiência Liquidação: ${((t.l / t.a) * 100).toFixed(1)}%">${((t.l / t.a) * 100).toFixed(1).replace('.', ',')}%</td>
             `;
         });
         tbodyHtml += `</tr>`;
 
-        expenseGroups.slice(0, 6).forEach(g => {
+        sepExpenseGroups.forEach(g => {
             tbodyHtml += `<tr><td style="text-align:left; font-weight:600;" title="${g}">${g}</td>`;
             sortedYears.forEach(y => {
                 const item = sucessTableData.find(d => d.ano === parseInt(y) && d.grupo === g);
                 if (item) {
                     tbodyHtml += `
-                        <td style="font-size:9px;" title="${pFull(item.aut)}">${item.aut}</td>
-                        <td style="font-size:9px;" title="${pFull(item.emp)}">${item.emp}</td>
-                        <td style="font-size:9px;" title="${pFull(item.liq)}">${item.liq}</td>
+                        <td style="font-size:9px;" title="${fmtFull(item.aut)}">${fB(item.aut)}</td>
+                        <td style="font-size:9px;" title="${fmtFull(item.emp)}">${fB(item.emp)}</td>
+                        <td style="font-size:9px;" title="${fmtFull(item.liq)}">${fB(item.liq)}</td>
                         <td style="font-size:9px;" title="Eficiência: ${item.p_emp}">${item.p_emp}</td>
                         <td style="font-size:9px; font-weight:bold" title="Eficiência: ${item.p_liq}">${item.p_liq}</td>
                     `;
@@ -398,56 +589,66 @@ document.addEventListener('DOMContentLoaded', function () {
         popTab('table-sucesso-detalhado', tbodyHtml);
     }
 
-    renderSucessoTable(['2025', '2026']); // Render inicial
+    renderSucessoTable(['2023', '2024', '2025', '2026']); // Render inicial
 
-    // C. Comparativo Despesa Table
+    // C. Comparativo Despesa Table — 5 colunas por ano
     let compHtml = '';
-    let tc = { o25: 0, a25: 0, e25: 0, l25: 0, o26: 0, a26: 0, e26: 0, l26: 0 };
-    compData.forEach(d => {
-        tc.o25 += d.o25; tc.a25 += d.a25; tc.e25 += d.e25; tc.l25 += d.l25;
-        tc.o26 += d.o26; tc.a26 += d.a26; tc.e26 += d.e26; tc.l26 += d.l26;
-    });
-    const v25TC = calcVar(tc.l25, (tc.l25 * 0.9));
-    const v26TC = calcVar(tc.l26, tc.l25);
+    let tcL24 = 0, tcL25 = 0, tcA25 = 0, tcE25 = 0, tcO25 = 0;
+    let tcL26 = 0, tcA26 = 0, tcE26 = 0, tcO26 = 0;
 
-    // Total Row
+    compData.forEach(d => {
+        tcL24 += d.l24;
+        tcO25 += d.o25; tcA25 += d.a25; tcE25 += d.e25; tcL25 += d.l25;
+        tcO26 += d.o26; tcA26 += d.a26; tcE26 += d.e26; tcL26 += d.l26;
+    });
+
+    const v25TC = calcVar(tcL25, tcL24);
+    const v26TC = calcVar(tcL26, tcL25);
+
+    const getVarStyle = (v) => {
+        return 'font-weight: bold; color: #334155;'; // Estilo neutro (sem cores)
+    };
+
     compHtml += `<tr class="row-total">
-        <td title="Somas Totais">TOTAL</td>
-        <td title="${fmtFull(tc.o25 * 1e9)}">${fV(tc.o25)}</td>
-        <td title="${fmtFull(tc.a25 * 1e9)}">${fV(tc.a25)}</td>
-        <td title="${fmtFull(tc.e25 * 1e9)}">${fV(tc.e25)}</td>
-        <td title="${fmtFull(tc.l25 * 1e9)}">${fV(tc.l25)}</td>
-        <td title="Variação Geral: ${v25TC}%">${v25TC}%</td>
-        <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(tc.o26 * 1e9)}">${fV(tc.o26)}</td>
-        <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(tc.a26 * 1e9)}">${fV(tc.a26)}</td>
-        <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(tc.e26 * 1e9)}">${fV(tc.e26)}</td>
-        <td style="background:rgba(30,58,138,0.05); color:#1e3a8a;" title="${fmtFull(tc.l26 * 1e9)}">${fV(tc.l26)}</td>
-        <td style="background:rgba(30,58,138,0.05);" title="Variação Geral: ${v26TC}%">${v26TC}%</td>
+        <td>TOTAL</td>
+        <td>${fB(tcO25)}</td>
+        <td>${fB(tcA25)}</td>
+        <td>${fB(tcE25)}</td>
+        <td>${fB(tcL25)}</td>
+        <td style="${getVarStyle(v25TC)}">${v25TC ? v25TC + '%' : ''}</td>
+        <td style="background:rgba(30,58,138,0.05);">${fB(tcO26)}</td>
+        <td style="background:rgba(30,58,138,0.05);">${fB(tcA26)}</td>
+        <td style="background:rgba(30,58,138,0.05);">${fB(tcE26)}</td>
+        <td style="background:rgba(30,58,138,0.05); color:#1e3a8a; font-weight:bold;">${fB(tcL26)}</td>
+        <td style="${getVarStyle(v26TC)}">${v26TC ? v26TC + '%' : ''}</td>
     </tr>`;
 
     compData.forEach(d => {
-        const v25 = calcVar(d.l25, (d.l25 * 0.9)); // Mocked 2024
+        const v25 = calcVar(d.l25, d.l24);
         const v26 = calcVar(d.l26, d.l25);
         compHtml += `<tr>
             <td style="text-align:left; font-weight:600;" title="${d.g}">${d.g}</td>
-            <td style="font-size:9px;" title="${fmtFull(d.o25 * 1e9)}">${fV(d.o25)}</td>
-            <td style="font-size:9px;" title="${fmtFull(d.a25 * 1e9)}">${fV(d.a25)}</td>
-            <td style="font-size:9px;" title="${fmtFull(d.e25 * 1e9)}">${fV(d.e25)}</td>
-            <td style="font-size:9px; background:#f8fafc;" title="${fmtFull(d.l25 * 1e9)}">${fV(d.l25)}</td>
-            <td style="font-weight:bold;" title="Variação: ${v25}%">${v25}%</td>
-            <td style="font-size:9px;" title="${fmtFull(d.o26 * 1e9)}">${fV(d.o26)}</td>
-            <td style="font-size:9px;" title="${fmtFull(d.a26 * 1e9)}">${fV(d.a26)}</td>
-            <td style="font-size:9px;" title="${fmtFull(d.e26 * 1e9)}">${fV(d.e26)}</td>
-            <td style="font-size:9px; background:rgba(30,58,138,0.05); font-weight:bold; color:#1e3a8a;" title="${fmtFull(d.l26 * 1e9)}">${fV(d.l26)}</td>
-            <td style="font-weight:bold; background:rgba(30,58,138,0.05);" title="Variação: ${v26}%">${v26}%</td>
+            <td style="font-size:9px;">${fB(d.o25)}</td>
+            <td style="font-size:9px;">${fB(d.a25)}</td>
+            <td style="font-size:9px;">${fB(d.e25)}</td>
+            <td style="font-size:9px; background:#f8fafc; font-weight:bold;">${fB(d.l25)}</td>
+            <td style="font-size:9px; ${getVarStyle(v25)}">${v25 ? v25 + '%' : ''}</td>
+            <td style="font-size:9px; background:rgba(30,58,138,0.05);">${fB(d.o26)}</td>
+            <td style="font-size:9px; background:rgba(30,58,138,0.05);">${fB(d.a26)}</td>
+            <td style="font-size:9px; background:rgba(30,58,138,0.05);">${fB(d.e26)}</td>
+            <td style="font-size:9px; background:rgba(30,58,138,0.05); font-weight:bold; color:#1e3a8a;">${fB(d.l26)}</td>
+            <td style="font-size:9px; ${getVarStyle(v26)}">${v26 ? v26 + '%' : ''}</td>
         </tr>`;
     });
     popTab('table-despesa-comparativo', compHtml);
 
+
+
     // D. Disponibilidade Table
     popTab('table-dispo', dispoData.categories.map((cat, i) => {
         const val = dispoData.values[i];
-        return `<tr><td style="text-align:left;" title="${cat}">${cat}</td><td class="text-end fw-bold" title="${fmtFull(val * 1e6)}">${fmtB(val * 1e6).replace('R$ ', '')}</td></tr>`;
+        const vNominal = val * 1e6;
+        return `<tr><td style="text-align:left;" title="${cat}">${cat}</td><td class="text-end fw-bold" title="${fmtFull(vNominal)}">${fmtB(vNominal)}</td></tr>`;
     }).join(''));
 
     // --- Handlers ---
@@ -514,13 +715,104 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // --- Mock de dados por ano e UO ---
+    const budgetByYearUO = {
+        '2026': {
+            '27101 - SEP': { disponivel: 3.0, autorizado: 16.8, liquidado: 3.51 },
+            '2601 - SEC. EDUCAÇÃO': { disponivel: 18.5, autorizado: 32.8, liquidado: 16.9 },
+            '2301 - SEC. SAÚDE': { disponivel: 12.3, autorizado: 28.6, liquidado: 14.1 },
+            '2401 - SEC. SEGURANÇA': { disponivel: 8.7, autorizado: 18.4, liquidado: 9.2 },
+            '__all__': { disponivel: 3.0, autorizado: 110.5, liquidado: 3.51 }
+        },
+        '2025': {
+            '27101 - SEP': { disponivel: 24.5, autorizado: 45.0, liquidado: 18.2 },
+            '2601 - SEC. EDUCAÇÃO': { disponivel: 15.0, autorizado: 28.5, liquidado: 13.5 },
+            '2301 - SEC. SAÚDE': { disponivel: 11.2, autorizado: 25.0, liquidado: 11.8 },
+            '2401 - SEC. SEGURANÇA': { disponivel: 6.9, autorizado: 15.5, liquidado: 7.8 },
+            '__all__': { disponivel: 57.6, autorizado: 114.0, liquidado: 51.3 }
+        },
+        '2024': {
+            '27101 - SEP': { disponivel: 19.8, autorizado: 38.5, liquidado: 16.5 },
+            '2601 - SEC. EDUCAÇÃO': { disponivel: 13.5, autorizado: 27.0, liquidado: 12.8 },
+            '2301 - SEC. SAÚDE': { disponivel: 8.9, autorizado: 23.5, liquidado: 10.2 },
+            '2401 - SEC. SEGURANÇA': { disponivel: 6.2, autorizado: 14.8, liquidado: 6.9 },
+            '__all__': { disponivel: 48.4, autorizado: 103.8, liquidado: 46.4 }
+        },
+        '2023': {
+            '27101 - SEP': { disponivel: 18.2, autorizado: 35.0, liquidado: 15.8 },
+            '2601 - SEC. EDUCAÇÃO': { disponivel: 12.8, autorizado: 25.5, liquidado: 11.9 },
+            '2301 - SEC. SAÚDE': { disponivel: 7.5, autorizado: 21.0, liquidado: 9.5 },
+            '2401 - SEC. SEGURANÇA': { disponivel: 5.8, autorizado: 13.5, liquidado: 6.2 },
+            '__all__': { disponivel: 44.3, autorizado: 95.0, liquidado: 43.4 }
+        }
+    };
+
+    // PO líder por ano e UO
+    const topPOByYearUO = {
+        '2026': {
+            '27101 - SEP': { nome: '003339 - REFORMA SEP', valor: 844000 },
+            '2601 - SEC. EDUCAÇÃO': { nome: '000002 - D. OBRIG.', valor: 14.8 },
+            '2301 - SEC. SAÚDE': { nome: '000002 - D. OBRIG.', valor: 10.2 },
+            '2401 - SEC. SEGURANÇA': { nome: '003055 - POL. PREV.', valor: 5.8 },
+            '__all__': { nome: '003339 - REFORMA SEP', valor: 844000 }
+        },
+        '2025': {
+            '27101 - SEP': { nome: '003339 - REFORMA SEP', valor: 844000 },
+            '2601 - SEC. EDUCAÇÃO': { nome: '000002 - D. OBRIG.', valor: 12.5 },
+            '2301 - SEC. SAÚDE': { nome: '000002 - D. OBRIG.', valor: 9.1 },
+            '2401 - SEC. SEGURANÇA': { nome: '003055 - POL. PREV.', valor: 5.0 },
+            '__all__': { nome: '003339 - REFORMA SEP', valor: 844000 }
+        },
+        '2024': {
+            '27101 - SEP': { nome: '000002 - D. OBRIG.', valor: 15.5 },
+            '2601 - SEC. EDUCAÇÃO': { nome: '000002 - D. OBRIG.', valor: 10.8 },
+            '2301 - SEC. SAÚDE': { nome: '000002 - D. OBRIG.', valor: 7.9 },
+            '2401 - SEC. SEGURANÇA': { nome: '003055 - POL. PREV.', valor: 4.3 },
+            '__all__': { nome: '000002 - D. OBRIG.', valor: 15.5 }
+        }
+    };
+
+    function updateTopIndicators(yearsToUse) {
+        // 1. Determina o ano mais recente selecionado
+        const sortedYears = [...yearsToUse].sort((a, b) => parseInt(b) - parseInt(a));
+        const latestYear = sortedYears[0];
+        const prevYear = String(parseInt(latestYear) - 1);
+
+        // 2. Determina a UO selecionada (usa __all__ se nenhuma ou múltiplas)
+        const uoChoices = choicesMap.get('filter-uo');
+        const selectedUOs = uoChoices ? uoChoices.getValue(true) : [];
+        const uoKey = (selectedUOs.length === 1) ? selectedUOs[0] : '__all__';
+
+        // 3. Busca dados do ano mais recente
+        const yearData = (budgetByYearUO[latestYear] || {})[uoKey] || { disponivel: 0, autorizado: 0, liquidado: 0 };
+        const prevData = (budgetByYearUO[prevYear] || {})[uoKey] || { disponivel: 0, autorizado: 0, liquidado: 0 };
+        const topPO = ((topPOByYearUO[latestYear] || {})[uoKey]) || { nome: '-', valor: 0 };
+
+        // 4. Cálculos
+        const sucesso = yearData.autorizado > 0 ? ((yearData.liquidado / yearData.autorizado) * 100) : 0;
+        const comparativo = prevData.liquidado > 0 ? (((yearData.liquidado - prevData.liquidado) / prevData.liquidado) * 100) : 0;
+        const compSinal = comparativo >= 0 ? '+' : '';
+
+        // 5. Injeta nos cards
+        const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+        setEl('val-disponivel', yearData.disponivel.toFixed(2).replace('.', ',') + ' B');
+        setEl('val-sucesso', sucesso.toFixed(2).replace('.', ',') + '%');
+        setEl('val-comparativo', compSinal + comparativo.toFixed(2).replace('.', ',') + '%');
+        setEl('sub-comparativo', 'vs. ' + prevYear);
+        setEl('val-po-valor', fmtB(topPO.valor));
+        setEl('val-po-nome', topPO.nome);
+    }
+
     document.getElementById('btn-filtrar')?.addEventListener('click', function () {
         updateChips();
         const selectedYears = Array.from(filterRefs.ano.selectedOptions).map(opt => opt.value).filter(v => v !== '');
         const yearsToUse = selectedYears.length > 0 ? selectedYears : ['2026'];
 
         if (successChart) successChart.setOption(getSuccessChartOptions(yearsToUse), true);
-        renderSucessoTable(yearsToUse); // Atualiza a tabela com os anos filtrados
+        renderSucessoTable(yearsToUse);
+        updateTopIndicators(yearsToUse);
+
     });
     document.getElementById('btn-restaurar')?.addEventListener('click', function () {
         Object.keys(filterRefs).forEach(key => {
@@ -541,6 +833,7 @@ document.addEventListener('DOMContentLoaded', function () {
         updateChips();
         if (successChart) successChart.setOption(getSuccessChartOptions(['2026']), true);
         renderSucessoTable(['2026']);
+        updateTopIndicators(['2026']);
     });
 
     // Inicializar Choices.js Premium
@@ -548,36 +841,44 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('select.custom-select-filter').forEach(el => {
         const c = new Choices(el, {
             removeItemButton: true,
-            searchEnabled: el.multiple,
-            searchPlaceholderValue: "Buscar...",
-            noResultsText: "Nada encontrado",
+            searchEnabled: false,
             itemSelectText: "",
-            shouldSort: false
+            shouldSort: false,
+            placeholder: true,
+            placeholderValue: el.getAttribute('placeholder') || "Selecione...",
+            allowHTML: true
         });
         choicesMap.set(el.id, c);
     });
 
     // Dynamic Filtering: UO -> Ação
     const uoActionsMap = {
+        "27101 - SEP": [
+            "2034 - Merenda Escolar",
+            "2045 - Transporte Escolar",
+            "0012 - Assessoria de Planejamento",
+            "0025 - Modernização Administrativa",
+            "0033 - Gestão de Contratos Estratégicos"
+        ],
         "2601 - SEC. EDUCAÇÃO": [
-            "2034 - Merenda Escolar", 
-            "2045 - Transporte Escolar", 
+            "2034 - Merenda Escolar",
+            "2045 - Transporte Escolar",
             "2088 - Reforma de Escolas",
             "2100 - Capacitação Pedagógica",
             "2150 - Aquisição de Kits de Robótica",
             "2200 - Manutenção de Creches"
         ],
         "2301 - SEC. SAÚDE": [
-            "1022 - Atendimento Básico (PAPS)", 
-            "1045 - Programa de Vacinação Estadual", 
+            "1022 - Atendimento Básico (PAPS)",
+            "1045 - Programa de Vacinação Estadual",
             "1099 - Construção de Hospitais Regionais",
             "1120 - Distribuição de Medicamentos de Alto Custo",
             "1180 - Modernização do SAMU - 192",
             "1250 - Ações de Vigilância Sanitária"
         ],
         "2401 - SEC. SEGURANÇA": [
-            "3055 - Policiamento Preventivo e Ostensivo", 
-            "3012 - Renovação da Frota de Viaturas", 
+            "3055 - Policiamento Preventivo e Ostensivo",
+            "3012 - Renovação da Frota de Viaturas",
             "3087 - Centro Integrado de Inteligência",
             "3120 - Modernização do Sistema Penitenciário",
             "3150 - Implementação de Câmeras de Monitoramento",
@@ -592,7 +893,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const selectedUOs = uoChoices.getValue(true);
         acaoChoices.clearStore();
-        
+
         let filteredActions = [];
         if (selectedUOs.length === 0) {
             Object.values(uoActionsMap).forEach(actions => {
@@ -621,8 +922,14 @@ document.addEventListener('DOMContentLoaded', function () {
         uoEl.addEventListener('change', updateAcoes);
     }
 
-    // Initial population
-    setTimeout(updateAcoes, 600);
-
-    updateChips();
+    // Initial population and synchronization
+    setTimeout(() => {
+        const uoChoices = choicesMap.get('filter-uo');
+        if (uoChoices) {
+            uoChoices.setChoiceByValue('27101 - SEP');
+        }
+        updateAcoes();
+        updateChips();
+        updateTopIndicators(['2026']);
+    }, 200);
 });

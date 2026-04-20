@@ -20,51 +20,59 @@ body {
 /* Indicadores - Solid Block Style Refinado */
 .card-content {
     display: flex;
-    height: 90px;
+    height: 65px;
+    border-radius: 12px;
     overflow: hidden;
-    border-radius: 8px;
 }
 
 .number-box {
-    width: 65%;
+    width: 35%;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-left: 20px;
+    padding-left: 12px;
     color: white;
 }
 
 .text-section {
-    width: 35%;
+    width: 65%;
     background-color: white;
     display: flex;
     align-items: center;
-    padding: 10px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #64748b;
+    padding: 8px 12px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #475569;
     line-height: 1.2;
 }
 
 /* Cores dos Blocos com Gradientes Sutis */
 .number-box.prevista {
-    background: linear-gradient(135deg, #56c0d8, #48a6bb);
+    background: linear-gradient(135deg, #56a380, #468c6a); /* Green */
 }
 
 .number-box.realizada {
-    background: linear-gradient(135deg, #ef8b9c, #d97a8a);
-}
-
-.number-box.realizada-prevista {
-    background: linear-gradient(135deg, #56a380, #468c6a);
+    background: linear-gradient(135deg, #ef8b9c, #d97a8a); /* Pink */
 }
 
 .number-box.empenhada-autorizada {
-    background: linear-gradient(135deg, #56c0d8, #48a6bb);
+    background: linear-gradient(135deg, #1e3a8a, #1e293b); /* Deep Blue */
 }
 
 .number-box.liquidada-autorizada {
-    background: linear-gradient(135deg, #ef8b9c, #d97a8a);
+    background: linear-gradient(135deg, #a372c4, #8b5cf6); /* Purple */
+}
+
+.card.indicator-card {
+    height: 65px;
+    overflow: hidden;
+    border: none;
+    border-radius: 12px;
+}
+
+.row.g-3.mb-4 .col {
+    flex: 1 0 0%;
+    min-width: 0;
 }
 
 .currency {
@@ -74,14 +82,15 @@ body {
 }
 
 .value {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     font-weight: 800;
 }
 
 .icon-top-right {
     position: absolute;
-    top: 10px;
-    right: 15px;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
     font-size: 1rem;
     opacity: 0.15;
 }
@@ -92,11 +101,13 @@ body {
     border-radius: 16px;
     border: 1px solid var(--border-color);
     box-shadow: var(--card-shadow);
-    height: 600px; /* Aumentado para comportar o layout duplo */
+    height: 600px;
+    /* Aumentado para comportar o layout duplo */
     display: flex;
     flex-direction: column;
     transition: transform 0.3s ease;
-    overflow: hidden; /* Garante que nada saia do card */
+    overflow: hidden;
+    /* Garante que nada saia do card */
     position: relative;
 }
 
@@ -202,23 +213,19 @@ body {
     border-collapse: separate;
     border-spacing: 0;
     width: 100%;
-    min-width: 950px;
-    table-layout: fixed;
     color: #334155;
 }
 
-/* Definição de largura estrita */
+/* Permitir que as colunas se adaptem ao conteúdo e respirem */
 .table-mini th:nth-child(1),
 .table-mini td:nth-child(1) {
-    width: 80px;
-    min-width: 80px;
-    max-width: 80px;
+    min-width: 150px;
+    max-width: 250px;
 }
 
 .table-mini th:not(:first-child),
 .table-mini td:not(:first-child) {
-    width: 85px;
-    min-width: 85px;
+    min-width: 75px;
 }
 
 .table-mini thead th {
@@ -311,7 +318,7 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .tag-label {
@@ -526,81 +533,169 @@ body {
     font-weight: 600;
 }
 
-/* --- Novos Filtros Premium --- */
-.custom-select-filter {
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 0.9rem;
-    color: #475569;
-    background-color: #ffffff;
-    transition: all 0.2s ease;
-    height: 48px !important;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-.custom-select-filter:focus {
-    border-color: #56c0d8;
-    box-shadow: 0 0 0 3px rgba(86, 192, 216, 0.1);
-    background-color: white;
-    outline: none;
-}
-
-/* Melhorar aparência de multiselect nativo */
-select[multiple].custom-select-filter {
-    height: auto !important;
-    min-height: 48px;
-    padding: 8px 12px;
+/* --- Sistema de Design Unificado (Filtros e Cards) --- */
+:root {
+    --f-height: 52px;
+    --f-radius: 12px;
+    --f-font: 0.9rem;
 }
 
 .filter-label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #334155;
-    letter-spacing: -0.01em;
+    font-size: 11px;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+    display: block;
 }
 
-.modal-content {
-    border-radius: 20px !important;
-    overflow: hidden;
-}
-
-.variation-up {
-    color: #10b981;
-    font-weight: bold;
-}
-
-.variation-down {
-    color: #ef4444;
-    font-weight: bold;
-}
-
-/* Choices.js Premium Overrides */
-.choices[data-type*="select-multiple"] .choices__inner {
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    background-color: #ffffff;
-    min-height: 48px;
-    padding: 4px 8px;
-}
-
+/* Unificação de Campos */
+.custom-select-filter, 
+.choices,
 .choices__inner {
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    background-color: #ffffff;
-    min-height: 48px;
-    font-size: 0.9rem;
-    color: #475569;
+    width: 100% !important;
+}
+
+.custom-select-filter,
+.choices__inner {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: var(--f-radius) !important;
+    min-height: var(--f-height) !important;
+    height: auto !important; /* Permite crescer verticalmente */
+    padding: 4px 16px !important;
+    font-size: var(--f-font) !important;
+    color: #1e293b !important;
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: wrap !important; /* Adiciona abaixo se não couber */
+    gap: 6px !important;
+    box-sizing: border-box !important;
+}
+
+/* Container interno de tags */
+.choices__list--multiple {
+    display: flex !important;
+    flex-wrap: wrap !important;   /* Quebra linha */
+    align-items: center !important;
+    gap: 6px !important;
+    flex: 1 !important;
+    padding: 4px 0 !important;
+}
+
+/* Ocultar scroll desnecessário */
+.choices__list--multiple::-webkit-scrollbar {
+    display: none !important;
+}
+
+/* Esconder placeholder quando há itens selecionados */
+.choices__inner:has(.choices__item) .choices__input::placeholder {
+    opacity: 0 !important;
+}
+
+.choices__input {
+    background: transparent !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: auto !important; /* Deixa o tamanho natural */
+    max-width: 100px !important;
+    height: 100% !important;
+    font-size: inherit !important;
+}
+
+/* Quando NÃO há itens, o input deve ocupar tudo para o placeholder ficar na esquerda */
+.choices__inner:not(:has(.choices__item)) .choices__input {
+    width: 100% !important;
 }
 
 .choices__list--multiple .choices__item {
-    background-color: var(--primary-blue);
-    border: none;
-    border-radius: 6px;
-    font-weight: 500;
+    background-color: #f1f5f9 !important;
+    color: #475569 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 4px 12px !important;
+    font-size: 0.8rem !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important; /* Impede que as tags sumam ao encolher */
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
 }
 
-.choices[data-type*="select-one"] .choices__input {
-    background-color: transparent;
+/* Estilização do Botão de Excluir (X) */
+.choices__list--multiple .choices__button {
+    border-left: 1px solid #cbd5e1 !important;
+    margin-left: 8px !important;
+    margin-right: -4px !important;
+    padding-left: 8px !important;
+    opacity: 0.6 !important;
+    filter: invert(0) !important; /* Garante que não fique branco se o tema mudar */
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L9 9M9 1L1 9' stroke='%23475569' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") !important;
 }
+
+.choices__list--multiple .choices__button:hover {
+    opacity: 1 !important;
+}
+
+/* Novos Cards Superiores */
+.indicator-card-new {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100px;
+    transition: all 0.3s ease;
+}
+
+.indicator-card-new:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+.indicator-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+}
+
+.indicator-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.2;
+}
+
+.indicator-subtext {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 4px;
+}
+
+.number-box .value-wrapper {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.number-box .value {
+    font-size: 1.1rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.number-box .currency {
+    font-size: 0.65rem;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+/* Modal e Misc */
+.modal-content { border-radius: 24px !important; border: none !important; }
+.modal-body { overflow: visible !important; }
