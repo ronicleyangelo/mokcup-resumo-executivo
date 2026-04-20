@@ -146,146 +146,119 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }).render();
 
-    function getSuccessChartOptions(years = ['2026']) {
-        const latestYear = years[years.length - 1];
-
-        // Sort categories by Liquidado value of the latest year
-        // In ECharts horizontal bars, yAxis order is bottom-to-top, so we sort ascending to get highest at top.
-        const sortedCategories = [...sepExpenseGroups].sort((a, b) => {
-            const itemA = sucessTableData.find(d => d.ano === parseInt(latestYear) && d.grupo === a);
-            const itemB = sucessTableData.find(d => d.ano === parseInt(latestYear) && d.grupo === b);
-            const valA = itemA ? parseFloat(itemA.p_liq.replace(',', '.').replace('%', '')) : 0;
-            const valB = itemB ? parseFloat(itemB.p_liq.replace(',', '.').replace('%', '')) : 0;
-            return valA - valB;
-        });
-
+    function getSuccessChartOptions(selectedYears = ['2026']) {
+        // Obter grupos despesa + receitas (R)
+        const groups = expenseGroups.filter(g => g.startsWith('1') || g.startsWith('3') || g.startsWith('4') || g.startsWith('R'));
+        
         const series = [];
+        const colors = ['#3b82f6', '#f43f5e', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4'];
 
-        const yearColors = {
-            '2026': { liq: '#60a5fa', emp: '#dbeafe' }, // Azul Médio-Claro vs Muito Claro
-            '2025': { liq: '#34d399', emp: '#d1fae5' }, // Verde Médio-Claro vs Muito Claro
-            '2024': { liq: '#fb923c', emp: '#ffedd5' }, // Laranja Médio-Claro vs Muito Claro
-            '2023': { liq: '#a78bfa', emp: '#ede9fe' }  // Roxo Médio-Claro vs Muito Claro
-        };
-
-        years.forEach(year => {
-            const colors = yearColors[year] || { emp: '#56c0d8', liq: '#ef8b9c' };
+        groups.forEach((g, i) => {
+            const shortName = g.split('-')[1].trim();
             const liqData = [];
-            const diffData = []; // Empenhado - Liquidado (O saldo a liquidar)
+            const empDiffData = [];
 
-            sortedCategories.forEach(cat => {
-                const item = sucessTableData.find(d => d.ano === parseInt(year) && d.grupo === cat);
-                const l = item ? parseFloat(item.p_liq.replace(',', '.').replace('%', '')) : 0;
-                const e = item ? parseFloat(item.p_emp.replace(',', '.').replace('%', '')) : 0;
-                liqData.push(l);
-                diffData.push(Math.max(0, e - l));
+            selectedYears.forEach(year => {
+                // Tenta extrair o código numérico/R do grupo
+                const code = g.split(' ')[0];
+                const item = sucessTableData.find(d => d.ano === parseInt(year) && d.grupo.startsWith(code));
+                
+                const empStr = item ? (item.p_emp || '0%').toString() : '0%';
+                const liqStr = item ? (item.p_liq || '0%').toString() : '0%';
+                
+                const emp = parseFloat(empStr.replace(',', '.').replace('%', ''));
+                const liq = parseFloat(liqStr.replace(',', '.').replace('%', ''));
+
+                liqData.push(liq);
+                empDiffData.push(Math.max(0, emp - liq));
             });
 
-            // 1. Liquidado (Base da Pilha)
+            const colorKey = colors[i % colors.length];
+
+            // 1. Liquidado
             series.push({
-                name: `${year} (Liquidado)`,
+                name: `${shortName} (Liquidado)`,
                 type: 'bar',
-                stack: year,
+                stack: `stack_${i}`,
                 data: liqData,
-                itemStyle: { color: colors.liq, borderRadius: [0, 0, 0, 0] },
-                barMaxWidth: 20,
+                itemStyle: { color: colorKey },
                 label: {
                     show: true,
-                    position: 'insideRight',
-                    formatter: (p) => p.value > 15 ? (p.value.toFixed(1) + '%') : '', // Só mostra se houver espaço
-                    fontSize: 9,
-                    fontWeight: 'bold',
-                    color: '#fff'
+                    position: 'inside',
+                    fontSize: 8,
+                    color: '#fff',
+                    formatter: (p) => p.value > 0 ? p.value.toFixed(1).replace('.', ',') + '%' : ''
                 }
             });
 
-            // 2. Empenhado (Topo da Pilha - Apenas o Saldo)
+            // 2. Empenhado (Saldo)
             series.push({
-                name: `${year} (Empenhado)`,
+                name: `${shortName} (Empenhado)`,
                 type: 'bar',
-                stack: year,
-                data: diffData,
-                itemStyle: { color: colors.emp, borderRadius: [0, 4, 4, 0] },
-                barMaxWidth: 20,
+                stack: `stack_${i}`,
+                data: empDiffData,
+                itemStyle: { color: colorKey, opacity: 0.5 },
                 label: {
                     show: true,
-                    position: 'right',
-                    formatter: (p) => p.value > 0 ? (p.value.toFixed(1) + '%') : '',
-                    fontSize: 9,
-                    fontWeight: 'bold',
-                    color: '#64748b'
+                    position: 'inside',
+                    fontSize: 8,
+                    color: '#fff',
+                    formatter: (p) => p.value > 0 ? p.value.toFixed(1).replace('.', ',') + '%' : ''
                 }
             });
         });
 
         return {
+            legend: { 
+                bottom: '0%', 
+                type: 'scroll', 
+                icon: 'circle',
+                textStyle: { fontSize: 10 },
+                pageTextStyle: { fontSize: 9 }
+            },
             tooltip: {
                 trigger: 'item',
-                backgroundColor: 'rgba(255, 255, 255, 0.98)',
-                formatter: (p) => {
-                    const catName = p.name;
-                    const seriesName = p.seriesName;
-                    const yearMatch = seriesName.match(/\d{4}/);
-                    const year = yearMatch ? yearMatch[0] : '';
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                formatter: function (params) {
+                    const yearIndex = params.dataIndex;
+                    const yearName = selectedYears[yearIndex];
+                    const fullSeriesName = params.seriesName;
+                    const groupName = fullSeriesName.replace(' (Liquidado)', '').replace(' (Empenhado)', '');
+                    
+                    // Encontrar dados para o tooltip (Soma a parte stackada)
+                    const myStack = series.find(s => s.name === fullSeriesName).stack;
+                    const parts = series.filter(s => s.stack === myStack);
+                    const liqVal = parts.find(p => p.name.includes('(Liquidado)')).data[yearIndex];
+                    const empDiffVal = parts.find(p => p.name.includes('(Empenhado)')).data[yearIndex];
+                    const totalEmp = liqVal + empDiffVal;
+                    const color = parts.find(p => p.name.includes('(Liquidado)')).itemStyle.color;
 
-                    // Buscar o item correspondente de Empenhado e Liquidado para este ano
-                    const item = sucessTableData.find(d => d.ano === parseInt(year) && d.grupo === catName);
-                    if (!item) return '';
-
-                    const liqVal = parseFloat(item.p_liq.replace(',', '.').replace('%', ''));
-                    const emqVal = parseFloat(item.p_emp.replace(',', '.').replace('%', ''));
-
-                    // Cores do ano
-                    const colors = yearColors[year] || { emp: '#56c0d8', liq: '#ef8b9c' };
-
-                    let rowsHtml = '';
-                    rowsHtml += `<div class="tooltip-row active">
-                        <span class="dot" style="background:${colors.emp}"></span>
-                        <span class="label">${year} (Empenhado):</span>
-                        <span class="val" style="font-weight:700;">${emqVal.toFixed(1).replace('.', ',')}%</span>
-                    </div>`;
-                    rowsHtml += `<div class="tooltip-row active">
-                        <span class="dot" style="background:${colors.liq}"></span>
-                        <span class="label">${year} (Liquidado):</span>
-                        <span class="val" style="font-weight:700;">${liqVal.toFixed(1).replace('.', ',')}%</span>
-                    </div>`;
-
-                    return `<div class="premium-tooltip">
-                        <div class="tooltip-header">
-                            <div class="uo-info">${catName}</div>
-                            <div class="exercise-info">Exercício ${year}</div>
+                    return `
+                        <div class="premium-tooltip">
+                            <div class="tooltip-header">
+                                <div class="uo-info">${groupName}</div>
+                                <div class="exercise-info">Exercício ${yearName}</div>
+                            </div>
+                            <div class="tooltip-body">
+                                <p style="margin:2px 0"><span style="display:inline-block;width:10px;height:10px;background:${color};border-radius:50%;margin-right:5px"></span><b>Liquidado:</b> ${liqVal.toFixed(1).replace('.', ',')}%</p>
+                                <p style="margin:2px 0"><span style="display:inline-block;width:10px;height:10px;background:${color};opacity:0.5;border-radius:50%;margin-right:5px"></span><b>Empenhado:</b> ${totalEmp.toFixed(1).replace('.', ',')}%</p>
+                            </div>
                         </div>
-                        <div class="tooltip-body">${rowsHtml}</div>
-                    </div>`;
+                    `;
                 }
             },
-            legend: {
-                bottom: 0,
-                icon: 'circle',
-                textStyle: { fontSize: 11, fontWeight: 600 }
-            },
-            grid: { top: '5%', bottom: '15%', left: '3%', right: '15%', containLabel: true },
+            grid: { bottom: '15%', top: '10%', left: '3%', right: '5%', containLabel: true },
             xAxis: {
                 type: 'value',
                 max: 100,
-                axisLabel: {
-                    show: true,
-                    formatter: '{value}%',
-                    color: '#94a3b8',
-                    fontSize: 10
-                },
-                splitLine: {
-                    show: true,
-                    lineStyle: { type: 'dashed', color: '#e2e8f0' }
-                },
-                axisLine: { show: false }
+                axisLabel: { fontSize: 8, formatter: '{value}%' },
+                splitLine: { show: true, lineStyle: { type: 'dashed' } }
             },
             yAxis: {
                 type: 'category',
-                data: sortedCategories,
-                axisLabel: { fontSize: 9, fontWeight: 700, color: '#475569' },
-                axisLine: { lineStyle: { color: '#e2e8f0' } },
-                axisTick: { show: false }
+                data: selectedYears,
+                inverse: true,
+                axisLabel: { fontSize: 12, fontWeight: 'bold' }
             },
             series: series
         };
@@ -924,6 +897,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         updateAcoes();
         updateChips();
-        updateTopIndicators(['2026']);
+        updateTopCards(['2026']);
     }, 200);
 });
