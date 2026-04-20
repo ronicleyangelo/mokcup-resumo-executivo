@@ -769,6 +769,13 @@ document.addEventListener('DOMContentLoaded', function () {
         setEl('top-card-comparativo', compSinal + comparativo.toFixed(2).replace('.', ',') + '%');
         setEl('top-card-po-valor', fmtB(topPO.valor));
         setEl('top-card-po-nome', topPO.nome);
+
+        // Atualiza tooltips (title) com valores cheios
+        const dispoCard = document.getElementById('top-card-dispo')?.closest('.col');
+        if (dispoCard) dispoCard.title = `Valor Integral: ${fmtFull(yearData.disponivel * 1e6)}`;
+        
+        const poCard = document.getElementById('card-maior-po-container');
+        if (poCard) poCard.title = `Valor Integral: ${fmtFull(topPO.valor)}`;
     }
 
     document.getElementById('btn-filtrar')?.addEventListener('click', function () {
@@ -897,6 +904,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         updateAcoes();
         updateChips();
-        updateTopCards(['2026']);
+        updateTopIndicators(['2026']);
     }, 200);
 });
