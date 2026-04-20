@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function () {
         { po: '000002 - D. OBRIG.', o23: 2200000, a23: 2200000, e23: 1900000, l23: 1500000, o24: 2500000, a24: 2500000, e24: 2200000, l24: 1700000, o25: 2800000, a25: 2800000, e25: 2500000, l25: 1800000, o26: 3000000, a26: 3000000, e26: 2800000, l26: 2200000 },
         { po: '003213 - SEGER', o23: 1000000, a23: 1000000, e23: 900000, l23: 800000, o24: 1100000, a24: 1100000, e24: 1000000, l24: 850000, o25: 1200000, a25: 1200000, e25: 1100000, l25: 900000, o26: 1300000, a26: 1250000, e26: 1150000, l26: 1050000 }
     ];
-    const poList = [...poDataDetailed].sort((a, b) => b.a26 - a.a26);
 
     const sucessTableData = [
         { ano: 2026, grupo: expenseGroups[0], aut: '13,00 mi', emp: '12,39 mi', liq: '2,95 mi', p_emp: '95,34%', p_liq: '22,70%' },
@@ -76,9 +75,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Shared Premium Tooltip ---
     const buildTooltip = (title, subtitle, series, w, dataPointIndex, isCurrency = true) => {
         let rowsHtml = '';
-        series.forEach((sVal, i) => {
-            const seriesName = w.globals.seriesNames[i];
-            const color = w.config.colors[i];
+        const seriesToUse = seriesIndex !== null ? [series[seriesIndex]] : series;
+        const seriesNamesToUse = seriesIndex !== null ? [w.globals.seriesNames[seriesIndex]] : w.globals.seriesNames;
+        const colorsToUse = seriesIndex !== null ? [w.config.colors[seriesIndex]] : w.config.colors;
+
+        seriesToUse.forEach((sVal, i) => {
+            const seriesName = seriesNamesToUse[i];
+            const color = colorsToUse[i];
             const val = sVal[dataPointIndex];
             let formattedVal = '';
             if (isCurrency) {
@@ -106,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         yaxis: { show: true, labels: { formatter: (val) => "R$ " + (val / 1e6).toFixed(0) + "M" } },
         grid: { show: true, borderColor: '#f1f1f1' },
-        legend: { show: true, position: 'bottom', markers: { radius: 4 } },
+        legend: { show: true, position: 'bottom', markers: { shape: 'circle', radius: 12 } },
         tooltip: {
             custom: function ({ series, dataPointIndex, w }) {
                 const label = w.globals.labels[dataPointIndex];
@@ -120,8 +123,15 @@ document.addEventListener('DOMContentLoaded', function () {
         const series = [];
         const colors = ['#3b82f6', '#f43f5e', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4'];
 
-        groups.forEach((g, i) => {
-            const shortName = g.split('-')[1].trim();
+        const yearColors = {
+            '2026': { liq: '#60a5fa', emp: '#dbeafe' }, // Azul Médio-Claro vs Muito Claro
+            '2025': { liq: '#34d399', emp: '#d1fae5' }, // Verde Médio-Claro vs Muito Claro
+            '2024': { liq: '#fb923c', emp: '#ffedd5' }, // Laranja Médio-Claro vs Muito Claro
+            '2023': { liq: '#a78bfa', emp: '#ede9fe' }  // Roxo Médio-Claro vs Muito Claro
+        };
+
+        years.forEach(year => {
+            const colors = yearColors[year] || { emp: '#56c0d8', liq: '#ef8b9c' };
             const liqData = [];
             const empDiffData = [];
 
@@ -142,9 +152,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // 1. Parte Esquerda (Liquidado)
             series.push({
-                name: `${shortName} (Liquidado)`,
+                name: `${year} (Liquidado)`,
                 type: 'bar',
-                stack: `stack_${i}`,
+                stack: year,
                 data: liqData,
                 itemStyle: { color: colorKey },
                 showBackground: true,
@@ -216,7 +226,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                 ${rowsHtml}
                             </div>
                         </div>
-                    `;
+                        <div class="tooltip-body">${rowsHtml}</div>
+                    </div>`;
                 }
             },
             grid: { bottom: '15%', top: '25%', left: '5%', right: '5%', containLabel: true },
@@ -284,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function () {
             labels: { style: { fontSize: '9px' }, formatter: (val) => val + "%" }
         },
         grid: { show: true, borderColor: '#f1f1f1', strokeDashArray: 4 },
-        legend: { position: 'bottom', horizontalAlign: 'center', offsetY: 0, markers: { radius: 4 } },
+        legend: { position: 'bottom', horizontalAlign: 'center', offsetY: 0, markers: { shape: 'circle', radius: 12 } },
         tooltip: {
             custom: function ({ series, dataPointIndex, w }) {
                 const group = compData[dataPointIndex].g;
@@ -293,38 +304,85 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }).render();
 
-    new ApexCharts(document.querySelector("#chart-po"), {
-        series: [
-            { name: 'Orçado', data: poList.map(p => p.o26 / 1e9) },
-            { name: 'Autorizado', data: poList.map(p => p.a26 / 1e9) },
-            { name: 'Empenhado', data: poList.map(p => p.e26 / 1e9) },
-            { name: 'Liquidado', data: poList.map(p => p.l26 / 1e9) }
-        ],
-        chart: { type: 'bar', height: '100%', toolbar: { show: false }, stacked: false },
-        colors: ['#cbd5e1', '#56c0d8', '#a372c4', '#1e3a8a'],
-        plotOptions: {
-            bar: {
-                horizontal: true,
-                barHeight: '85%',
-                borderRadius: 0,
-                dataLabels: { position: 'top' }
-            }
-        },
-        dataLabels: { enabled: false },
-        xaxis: {
-            categories: poList.map(p => p.po),
-            labels: { formatter: (val) => "R$ " + val + " B", style: { fontSize: '9px' } }
-        },
-        yaxis: { labels: { style: { fontSize: '9px', fontWeight: 600 } } },
-        grid: { borderColor: '#f1f1f1', strokeDashArray: 4, xaxis: { lines: { show: true } } },
-        legend: { position: 'bottom', horizontalAlign: 'center', fontSize: '11px', markers: { radius: 4 } },
-        tooltip: {
-            custom: function ({ series, dataPointIndex, w }) {
-                const poName = poList[dataPointIndex].po;
-                return buildTooltip(poName, "Plano Orçamentário 2026", series, w, dataPointIndex);
-            }
-        }
-    }).render();
+
+    // 4. Plano Orçamentário — ECharts com Scroll Vertical Nativo (Interno)
+    const poChartDom = document.querySelector("#chart-po");
+    if (poChartDom && typeof echarts !== 'undefined') {
+        const poChart = echarts.init(poChartDom);
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' },
+                formatter: function (params) {
+                    const poName = params[0].name;
+                    let rowsHtml = '';
+                    params.forEach(p => {
+                        rowsHtml += `<div class="tooltip-row active">
+                            <span class="label">${p.seriesName}:</span>
+                            <span class="val">${fmtFull(p.value)}</span>
+                        </div>`;
+                    });
+                    return `<div class="premium-tooltip">
+                        <div class="tooltip-header">
+                            <div class="uo-info">${poName}</div>
+                            <div class="exercise-info">Exercício: 2026</div>
+                        </div>
+                        <div class="tooltip-body">
+                            ${rowsHtml}
+                        </div>
+                    </div>`;
+                }
+            },
+            legend: { bottom: 0, icon: 'circle', textStyle: { fontSize: 10 } },
+            grid: { top: '5%', left: '3%', right: '15%', bottom: '12%', containLabel: true },
+            dataZoom: [],
+            xAxis: {
+                type: 'value',
+                axisLabel: {
+                    fontSize: 9,
+                    formatter: (v) => {
+                        if (v === 0) return 'R$ 0';
+                        if (Math.abs(v) >= 1000000) return 'R$ ' + (v / 1000000).toFixed(0).replace('.', ',') + ' mi';
+                        if (Math.abs(v) >= 1000) return 'R$ ' + (v / 1000).toFixed(0) + ' mil';
+                        return 'R$ ' + v;
+                    }
+                }
+            },
+            yAxis: {
+                type: 'category',
+                data: poChartList.map(p => p.po),
+                axisLabel: {
+                    interval: 0,
+                    fontSize: 9,
+                    formatter: (v) => v.length > 25 ? v.substring(0, 25) + '...' : v
+                }
+            },
+            series: [
+                {
+                    name: 'Orçado', type: 'bar', itemStyle: { color: '#cbd5e1' },
+                    label: { show: false },
+                    data: poChartList.map(p => p.o26)
+                },
+                {
+                    name: 'Autorizado', type: 'bar', itemStyle: { color: '#56c0d8' },
+                    label: { show: false },
+                    data: poChartList.map(p => p.a26)
+                },
+                {
+                    name: 'Empenhado', type: 'bar', itemStyle: { color: '#a372c4' },
+                    label: { show: false },
+                    data: poChartList.map(p => p.e26)
+                },
+                {
+                    name: 'Liquidado', type: 'bar', itemStyle: { color: '#1e3a8a' },
+                    label: { show: false },
+                    data: poChartList.map(p => p.l26)
+                }
+            ]
+        };
+        poChart.setOption(option);
+        window.addEventListener('resize', () => poChart.resize());
+    }
 
     // --- Tables ---
 
@@ -351,12 +409,12 @@ document.addEventListener('DOMContentLoaded', function () {
         <td title="${fmtFull(t_a25)}">${fB(t_a25)}</td>
         <td title="${fmtFull(t_e25)}">${fB(t_e25)}</td>
         <td title="${fmtFull(t_l25)}">${fB(t_l25)}</td>
-        <td title="Variação Percentual: ${v25T}%">${v25T}%</td>
+        <td title="Variação Percentual: ${v25T}">${v25T ? v25T + '%' : ''}</td>
         <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(t_o26)}">${fB(t_o26)}</td>
         <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(t_a26)}">${fB(t_a26)}</td>
         <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(t_e26)}">${fB(t_e26)}</td>
         <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(t_l26)}">${fB(t_l26)}</td>
-        <td style="background:rgba(30,58,138,0.05);" title="Variação Percentual: ${v26T}%">${v26T}%</td>
+        <td style="background:rgba(30,58,138,0.05);" title="Variação Percentual: ${v26T}">${v26T ? v26T + '%' : ''}</td>
     </tr>`;
 
     poList.forEach(d => {
@@ -368,12 +426,12 @@ document.addEventListener('DOMContentLoaded', function () {
             <td style="font-size:9px;" title="${fmtFull(d.a25)}">${getF(d.a25)}</td>
             <td style="font-size:9px;" title="${fmtFull(d.e25)}">${getF(d.e25)}</td>
             <td style="font-size:9px; background:#f8fafc;" title="${fmtFull(d.l25)}">${getF(d.l25)}</td>
-            <td style="font-weight:bold;" title="Variação: ${v25}%">${v25}%</td>
+            <td style="font-weight:bold;" title="Variação: ${v25}">${v25 ? v25 + '%' : ''}</td>
             <td style="font-size:9px;" title="${fmtFull(d.o26)}">${getF(d.o26)}</td>
             <td style="font-size:9px;" title="${fmtFull(d.a26)}">${getF(d.a26)}</td>
             <td style="font-size:9px;" title="${fmtFull(d.e26)}">${getF(d.e26)}</td>
             <td style="font-size:9px; background:rgba(30,58,138,0.05); font-weight:bold; color:#1e3a8a;" title="${fmtFull(d.l26)}">${getF(d.l26)}</td>
-            <td style="font-weight:bold; background:rgba(30,58,138,0.05);" title="Variação: ${v26}%">${v26}%</td>
+            <td style="font-weight:bold; background:rgba(30,58,138,0.05);" title="Variação: ${v26}">${v26 ? v26 + '%' : ''}</td>
         </tr>`;
     });
     popTab('table-po-detalhado', tablePoHtml);
@@ -439,9 +497,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 const item = sucessTableData.find(d => d.ano === parseInt(y) && d.grupo === g);
                 if (item) {
                     tbodyHtml += `
-                        <td style="font-size:9px;" title="${pFull(item.aut)}">${item.aut}</td>
-                        <td style="font-size:9px;" title="${pFull(item.emp)}">${item.emp}</td>
-                        <td style="font-size:9px;" title="${pFull(item.liq)}">${item.liq}</td>
+                        <td style="font-size:9px;" title="${fmtFull(item.aut)}">${fB(item.aut)}</td>
+                        <td style="font-size:9px;" title="${fmtFull(item.emp)}">${fB(item.emp)}</td>
+                        <td style="font-size:9px;" title="${fmtFull(item.liq)}">${fB(item.liq)}</td>
                         <td style="font-size:9px;" title="Eficiência: ${item.p_emp}">${item.p_emp}</td>
                         <td style="font-size:9px; font-weight:bold" title="Eficiência: ${item.p_liq}">${item.p_liq}</td>
                     `;
@@ -457,49 +515,60 @@ document.addEventListener('DOMContentLoaded', function () {
 
     renderSucessoTable(['2025', '2026']); // Render inicial
 
-    // C. Comparativo Despesa Table
-    let compHtml = '';
-    let tc = { o25: 0, a25: 0, e25: 0, l25: 0, o26: 0, a26: 0, e26: 0, l26: 0 };
-    compData.forEach(d => {
-        tc.o25 += d.o25; tc.a25 += d.a25; tc.e25 += d.e25; tc.l25 += d.l25;
-        tc.o26 += d.o26; tc.a26 += d.a26; tc.e26 += d.e26; tc.l26 += d.l26;
-    });
-    const v25TC = calcVar(tc.l25, (tc.l25 * 0.9));
-    const v26TC = calcVar(tc.l26, tc.l25);
+    renderSucessoTable(['2023', '2024', '2025', '2026']); // Render inicial
 
-    // Total Row
+    // C. Comparativo Despesa Table — 5 colunas por ano
+    let compHtml = '';
+    let tcL24 = 0, tcL25 = 0, tcA25 = 0, tcE25 = 0, tcO25 = 0;
+    let tcL26 = 0, tcA26 = 0, tcE26 = 0, tcO26 = 0;
+
+    compData.forEach(d => {
+        tcL24 += d.l24;
+        tcO25 += d.o25; tcA25 += d.a25; tcE25 += d.e25; tcL25 += d.l25;
+        tcO26 += d.o26; tcA26 += d.a26; tcE26 += d.e26; tcL26 += d.l26;
+    });
+
+    const v25TC = calcVar(tcL25, tcL24);
+    const v26TC = calcVar(tcL26, tcL25);
+
+    const getVarStyle = (v) => {
+        return 'font-weight: bold; color: #334155;'; // Estilo neutro (sem cores)
+    };
+
     compHtml += `<tr class="row-total">
-        <td title="Somas Totais">TOTAL</td>
-        <td title="${fmtFull(tc.o25 * 1e9)}">${fV(tc.o25)}</td>
-        <td title="${fmtFull(tc.a25 * 1e9)}">${fV(tc.a25)}</td>
-        <td title="${fmtFull(tc.e25 * 1e9)}">${fV(tc.e25)}</td>
-        <td title="${fmtFull(tc.l25 * 1e9)}">${fV(tc.l25)}</td>
-        <td title="Variação Geral: ${v25TC}%">${v25TC}%</td>
-        <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(tc.o26 * 1e9)}">${fV(tc.o26)}</td>
-        <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(tc.a26 * 1e9)}">${fV(tc.a26)}</td>
-        <td style="background:rgba(30,58,138,0.05);" title="${fmtFull(tc.e26 * 1e9)}">${fV(tc.e26)}</td>
-        <td style="background:rgba(30,58,138,0.05); color:#1e3a8a;" title="${fmtFull(tc.l26 * 1e9)}">${fV(tc.l26)}</td>
-        <td style="background:rgba(30,58,138,0.05);" title="Variação Geral: ${v26TC}%">${v26TC}%</td>
+        <td>TOTAL</td>
+        <td>${fB(tcO25)}</td>
+        <td>${fB(tcA25)}</td>
+        <td>${fB(tcE25)}</td>
+        <td>${fB(tcL25)}</td>
+        <td style="${getVarStyle(v25TC)}">${v25TC ? v25TC + '%' : ''}</td>
+        <td style="background:rgba(30,58,138,0.05);">${fB(tcO26)}</td>
+        <td style="background:rgba(30,58,138,0.05);">${fB(tcA26)}</td>
+        <td style="background:rgba(30,58,138,0.05);">${fB(tcE26)}</td>
+        <td style="background:rgba(30,58,138,0.05); color:#1e3a8a; font-weight:bold;">${fB(tcL26)}</td>
+        <td style="${getVarStyle(v26TC)}">${v26TC ? v26TC + '%' : ''}</td>
     </tr>`;
 
     compData.forEach(d => {
-        const v25 = calcVar(d.l25, (d.l25 * 0.9)); // Mocked 2024
+        const v25 = calcVar(d.l25, d.l24);
         const v26 = calcVar(d.l26, d.l25);
         compHtml += `<tr>
             <td style="text-align:left; font-weight:600;" title="${d.g}">${d.g}</td>
-            <td style="font-size:9px;" title="${fmtFull(d.o25 * 1e9)}">${fV(d.o25)}</td>
-            <td style="font-size:9px;" title="${fmtFull(d.a25 * 1e9)}">${fV(d.a25)}</td>
-            <td style="font-size:9px;" title="${fmtFull(d.e25 * 1e9)}">${fV(d.e25)}</td>
-            <td style="font-size:9px; background:#f8fafc;" title="${fmtFull(d.l25 * 1e9)}">${fV(d.l25)}</td>
-            <td style="font-weight:bold;" title="Variação: ${v25}%">${v25}%</td>
-            <td style="font-size:9px;" title="${fmtFull(d.o26 * 1e9)}">${fV(d.o26)}</td>
-            <td style="font-size:9px;" title="${fmtFull(d.a26 * 1e9)}">${fV(d.a26)}</td>
-            <td style="font-size:9px;" title="${fmtFull(d.e26 * 1e9)}">${fV(d.e26)}</td>
-            <td style="font-size:9px; background:rgba(30,58,138,0.05); font-weight:bold; color:#1e3a8a;" title="${fmtFull(d.l26 * 1e9)}">${fV(d.l26)}</td>
-            <td style="font-weight:bold; background:rgba(30,58,138,0.05);" title="Variação: ${v26}%">${v26}%</td>
+            <td style="font-size:9px;">${fB(d.o25)}</td>
+            <td style="font-size:9px;">${fB(d.a25)}</td>
+            <td style="font-size:9px;">${fB(d.e25)}</td>
+            <td style="font-size:9px; background:#f8fafc; font-weight:bold;">${fB(d.l25)}</td>
+            <td style="font-size:9px; ${getVarStyle(v25)}">${v25 ? v25 + '%' : ''}</td>
+            <td style="font-size:9px; background:rgba(30,58,138,0.05);">${fB(d.o26)}</td>
+            <td style="font-size:9px; background:rgba(30,58,138,0.05);">${fB(d.a26)}</td>
+            <td style="font-size:9px; background:rgba(30,58,138,0.05);">${fB(d.e26)}</td>
+            <td style="font-size:9px; background:rgba(30,58,138,0.05); font-weight:bold; color:#1e3a8a;">${fB(d.l26)}</td>
+            <td style="font-size:9px; ${getVarStyle(v26)}">${v26 ? v26 + '%' : ''}</td>
         </tr>`;
     });
     popTab('table-despesa-comparativo', compHtml);
+
+
 
     // D. Disponibilidade Table
     popTab('table-dispo', dispoData.categories.map((cat, i) => {
@@ -642,7 +711,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
         updateChips();
-        if (successChart) successChart.setOption(getSuccessChartOptions(['2026']));
+        if (successChart) successChart.setOption(getSuccessChartOptions(['2026']), true);
         renderSucessoTable(['2026']);
         updateTopCards(['2026']); // Reset indicators
     });
@@ -652,11 +721,12 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('select.custom-select-filter').forEach(el => {
         const c = new Choices(el, {
             removeItemButton: true,
-            searchEnabled: el.multiple,
-            searchPlaceholderValue: "Buscar...",
-            noResultsText: "Nada encontrado",
+            searchEnabled: false,
             itemSelectText: "",
-            shouldSort: false
+            shouldSort: false,
+            placeholder: true,
+            placeholderValue: el.getAttribute('placeholder') || "Selecione...",
+            allowHTML: true
         });
         choicesMap.set(el.id, c);
     });
