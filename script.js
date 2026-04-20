@@ -181,8 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 diffData.push(Math.max(0, e - l));
             });
 
-            // 1. Liquidado (Base da Pilha) dasdasddasdsadsasa
-
+            // 1. Liquidado (Base da Pilha)
             series.push({
                 name: `${year} (Liquidado)`,
                 type: 'bar',
