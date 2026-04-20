@@ -162,10 +162,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const series = [];
 
         const yearColors = {
-            '2026': { liq: '#1e40af', emp: '#93c5fd' }, // Azul Real
-            '2025': { liq: '#065f46', emp: '#a7f3d0' }, // Verde Esmeralda
-            '2024': { liq: '#9a3412', emp: '#fed7aa' }, // Abóbora Profundo
-            '2023': { liq: '#5b21b6', emp: '#ddd6fe' }  // Violeta Intenso
+            '2026': { liq: '#60a5fa', emp: '#dbeafe' }, // Azul Médio-Claro vs Muito Claro
+            '2025': { liq: '#34d399', emp: '#d1fae5' }, // Verde Médio-Claro vs Muito Claro
+            '2024': { liq: '#fb923c', emp: '#ffedd5' }, // Laranja Médio-Claro vs Muito Claro
+            '2023': { liq: '#a78bfa', emp: '#ede9fe' }  // Roxo Médio-Claro vs Muito Claro
         };
 
         years.forEach(year => {
