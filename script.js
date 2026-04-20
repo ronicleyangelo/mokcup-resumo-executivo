@@ -220,47 +220,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return {
             tooltip: {
-                trigger: 'axis',
+                trigger: 'item',
                 backgroundColor: 'rgba(255, 255, 255, 0.98)',
-                formatter: (params) => {
-                    const catName = params[0].name;
-                    let rowsHtml = '';
+                formatter: (p) => {
+                    const catName = p.name;
+                    const seriesName = p.seriesName;
+                    const yearMatch = seriesName.match(/\d{4}/);
+                    const year = yearMatch ? yearMatch[0] : '';
                     
-                    // Agrupar por ano para somar o total empenhado (p_liq + diff)
-                    const yearTotals = {};
-                    params.forEach(p => {
-                        const yearMatch = p.seriesName.match(/\d{4}/);
-                        const year = yearMatch ? yearMatch[0] : 'unknown';
-                        if (!yearTotals[year]) yearTotals[year] = { liq: 0, emp: 0, colors: {} };
-                        
-                        if (p.seriesName.includes('Liquidado')) {
-                            yearTotals[year].liq = p.value;
-                            yearTotals[year].colors.liq = p.color;
-                        } else {
-                            yearTotals[year].emp = p.value; // Isto é o diff
-                            yearTotals[year].colors.emp = p.color;
-                        }
-                    });
+                    // Buscar o item correspondente de Empenhado e Liquidado para este ano
+                    const item = sucessTableData.find(d => d.ano === parseInt(year) && d.grupo === catName);
+                    if (!item) return '';
 
-                    Object.keys(yearTotals).sort((a,b) => b-a).forEach(y => {
-                        const t = yearTotals[y];
-                        const totalEmp = t.liq + t.emp;
-                        
-                        // Ordem: Empenhado Total primeiro, depois Liquidado (conforme print)
-                        rowsHtml += `<div class="tooltip-row active">
-                            <span class="dot" style="background:${t.colors.emp}"></span>
-                            <span class="label">${y} (Empenhado):</span>
-                            <span class="val" style="font-weight:700;">${totalEmp.toFixed(1).replace('.', ',')}%</span>
-                        </div>`;
-                        rowsHtml += `<div class="tooltip-row active">
-                            <span class="dot" style="background:${t.colors.liq}"></span>
-                            <span class="label">${y} (Liquidado):</span>
-                            <span class="val" style="font-weight:700;">${t.liq.toFixed(1).replace('.', ',')}%</span>
-                        </div>`;
-                    });
+                    const liqVal = parseFloat(item.p_liq.replace(',', '.').replace('%', ''));
+                    const emqVal = parseFloat(item.p_emp.replace(',', '.').replace('%', ''));
+
+                    // Cores do ano
+                    const colors = yearColors[year] || { emp: '#56c0d8', liq: '#ef8b9c' };
+
+                    let rowsHtml = '';
+                    rowsHtml += `<div class="tooltip-row active">
+                        <span class="dot" style="background:${colors.emp}"></span>
+                        <span class="label">${year} (Empenhado):</span>
+                        <span class="val" style="font-weight:700;">${emqVal.toFixed(1).replace('.', ',')}%</span>
+                    </div>`;
+                    rowsHtml += `<div class="tooltip-row active">
+                        <span class="dot" style="background:${colors.liq}"></span>
+                        <span class="label">${year} (Liquidado):</span>
+                        <span class="val" style="font-weight:700;">${liqVal.toFixed(1).replace('.', ',')}%</span>
+                    </div>`;
 
                     return `<div class="premium-tooltip">
-                        <div class="tooltip-header"><div class="uo-info">${catName}</div></div>
+                        <div class="tooltip-header">
+                            <div class="uo-info">${catName}</div>
+                            <div class="exercise-info">Exercício ${year}</div>
+                        </div>
                         <div class="tooltip-body">${rowsHtml}</div>
                     </div>`;
                 }
