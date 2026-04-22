@@ -48,23 +48,28 @@ body {
 
 /* Cores dos Blocos com Gradientes Sutis */
 .number-box.prevista {
-    background: linear-gradient(135deg, #56a380, #468c6a); /* Green */
+    background: linear-gradient(135deg, #56a380, #468c6a);
+    /* Green */
 }
 
 .number-box.realizada {
-    background: linear-gradient(135deg, #ef8b9c, #d97a8a); /* Pink */
+    background: linear-gradient(135deg, #ef8b9c, #d97a8a);
+    /* Pink */
 }
 
 .number-box.empenhada-autorizada {
-    background: linear-gradient(135deg, #1e3a8a, #1e293b); /* Deep Blue */
+    background: linear-gradient(135deg, #1e3a8a, #1e293b);
+    /* Deep Blue */
 }
 
 .number-box.realizada-prevista {
-    background: linear-gradient(135deg, #0ea5e9, #0284c7); /* Sky Blue */
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    /* Sky Blue */
 }
 
 .number-box.liquidada-autorizada {
-    background: linear-gradient(135deg, #a372c4, #8b5cf6); /* Purple */
+    background: linear-gradient(135deg, #a372c4, #8b5cf6);
+    /* Purple */
 }
 
 .card.indicator-card {
@@ -555,7 +560,7 @@ body {
 }
 
 /* Unificação de Campos */
-.custom-select-filter, 
+.custom-select-filter,
 .choices,
 .choices__inner {
     width: 100% !important;
@@ -566,22 +571,25 @@ body {
     background-color: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
     border-radius: var(--f-radius) !important;
-    min-height: var(--f-height) !important;
-    height: auto !important; /* Permite crescer verticalmente */
+    /* min-height: var(--f-height) !important; */
+    height: auto !important;
+    /* Permite crescer verticalmente */
     padding: 4px 16px !important;
     font-size: var(--f-font) !important;
     color: #1e293b !important;
     display: flex !important;
     align-items: center !important;
-    flex-wrap: wrap !important; /* Adiciona abaixo se não couber */
-    gap: 6px !important;
+    flex-wrap: wrap !important;
+    /* Adiciona abaixo se não couber */
+    /* gap: 6px !important; */
     box-sizing: border-box !important;
 }
 
 /* Container interno de tags */
 .choices__list--multiple {
     display: flex !important;
-    flex-wrap: wrap !important;   /* Quebra linha */
+    flex-wrap: wrap !important;
+    /* Quebra linha */
     align-items: center !important;
     gap: 6px !important;
     flex: 1 !important;
@@ -602,10 +610,14 @@ body {
     background: transparent !important;
     margin: 0 !important;
     padding: 0 !important;
-    width: auto !important; /* Deixa o tamanho natural */
-    max-width: 100px !important;
+    width: 100% !important;
     height: 100% !important;
     font-size: inherit !important;
+}
+
+.choices__input::placeholder {
+    color: #94a3b8 !important;
+    opacity: 0.7 !important;
 }
 
 /* Quando NÃO há itens, o input deve ocupar tudo para o placeholder ficar na esquerda */
@@ -621,7 +633,8 @@ body {
     padding: 4px 12px !important;
     font-size: 0.8rem !important;
     white-space: nowrap !important;
-    flex-shrink: 0 !important; /* Impede que as tags sumam ao encolher */
+    flex-shrink: 0 !important;
+    /* Impede que as tags sumam ao encolher */
     display: flex !important;
     align-items: center !important;
     gap: 10px !important;
@@ -634,7 +647,8 @@ body {
     margin-right: -4px !important;
     padding-left: 8px !important;
     opacity: 0.6 !important;
-    filter: invert(0) !important; /* Garante que não fique branco se o tema mudar */
+    filter: invert(0) !important;
+    /* Garante que não fique branco se o tema mudar */
     background-image: url("data:image/svg+xml,%3Csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L9 9M9 1L1 9' stroke='%23475569' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") !important;
 }
 
@@ -657,7 +671,7 @@ body {
 
 .indicator-card-new:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
 }
 
 .indicator-label {
@@ -701,5 +715,11 @@ body {
 }
 
 /* Modal e Misc */
-.modal-content { border-radius: 24px !important; border: none !important; }
-.modal-body { overflow: visible !important; }
+.modal-content {
+    border-radius: 24px !important;
+    border: none !important;
+}
+
+.modal-body {
+    overflow: visible !important;
+}
