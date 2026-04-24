@@ -846,39 +846,59 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Dynamic Filtering: UO -> Ação
-    const uoActionsMap = {
-        "27101 - SEP": [
-            "2034 - Merenda Escolar",
-            "2045 - Transporte Escolar",
-            "0012 - Assessoria de Planejamento",
-            "0025 - Modernização Administrativa",
-            "0033 - Gestão de Contratos Estratégicos"
-        ],
-        "2601 - SEC. EDUCAÇÃO": [
-            "2034 - Merenda Escolar",
-            "2045 - Transporte Escolar",
-            "2088 - Reforma de Escolas",
-            "2100 - Capacitação Pedagógica",
-            "2150 - Aquisição de Kits de Robótica",
-            "2200 - Manutenção de Creches"
-        ],
-        "2301 - SEC. SAÚDE": [
-            "1022 - Atendimento Básico (PAPS)",
-            "1045 - Programa de Vacinação Estadual",
-            "1099 - Construção de Hospitais Regionais",
-            "1120 - Distribuição de Medicamentos de Alto Custo",
-            "1180 - Modernização do SAMU - 192",
-            "1250 - Ações de Vigilância Sanitária"
-        ],
-        "2401 - SEC. SEGURANÇA": [
-            "3055 - Policiamento Preventivo e Ostensivo",
-            "3012 - Renovação da Frota de Viaturas",
-            "3087 - Centro Integrado de Inteligência",
-            "3120 - Modernização do Sistema Penitenciário",
-            "3150 - Implementação de Câmeras de Monitoramento",
-            "3200 - Expansão do Corpo de Bombeiros Militar"
-        ]
-    };
+    // Usando dados comprimidos da base 
+    const uoDataMock = [
+        "01101|ALEES|0001|REESTRUTURAÇÃO DE CARGOS E CARREIRAS...",
+        "01101|ALEES|0003|PAGAMENTO DE APOSENTADORIA",
+        "01101|ALEES|0021|PAGAMENTO DE PESSOAL - CONCURSO PÚBLICO",
+        "01101|ALEES|2001|IMPLEMENTAÇÃO E MANUTENÇÃO SERVIÇOS LEGISLATIVOS",
+        "02101|TCEES|0014|PAGAMENTO DE PESSOAL DO PROVIMENTO",
+        "02101|TCEES|2018|EXERCÍCIO DO CONTROLE EXTERNO",
+        "03101|TJEES|2029|REMUNERAÇÃO DE PESSOAL ATIVO",
+        "03101|TJEES|2078|EFETIVIDADE NA PRESTAÇÃO JURISDICIONAL",
+        "05101|MPES|2091|REMUNERAÇÃO DE PESSOAL ATIVO",
+        "06101|DPES|2357|ASSISTÊNCIA JUDICIAL E EXTRAJUDICIAL",
+        "10101|SCV|2121|ASSESSORAMENTO AO GOVERNADOR",
+        "10102|SCM|2081|MANUTENÇÃO NÚCLEO OPERAÇÕES AÉREA",
+        "10103|SECONT|2602|AÇÕES DE AUDITORIA E CONTROLE",
+        "10104|SECOM|2090|DIVULGAÇÃO INSTITUCIONAL",
+        "16101|PGE|2238|CONSULTORIA E ASSESSORIA JURÍDICA",
+        "22101|SEFAZ|2151|GESTÃO FISCAL, CONTÁBIL E FINANCEIRA",
+        "27101|SEP|2077|CAPACITAÇÃO E TREINAMENTO DE RECURSOS HUMANOS",
+        "27101|SEP|2095|REMUNERAÇÃO DE PESSOAL ATIVO E ENCARGOS SOCIAIS",
+        "27101|SEP|2256|ELABORAÇÃO, IMPLANTAÇÃO E GESTÃO DOS INSTRUMENTOS DE PLANEJAMENTO",
+        "27101|SEP|2377|PARTICIPAÇÃO NO CONSÓRCIO DE INTEGRAÇÃO SUL E SUDESTE",
+        "27201|IJSN|2327|ELABORAÇÃO DE ESTUDOS E PESQUISAS",
+        "28101|SEGER|3252|MODERNIZAÇÃO DA GESTÃO PÚBLICA",
+        "31101|SEAG|3362|PAVIMENTAÇÃO DE ESTRADAS RURAIS - CAMINHOS DO CAMPO",
+        "32101|SECTI|2366|UNIVERSALIZAÇÃO DAS TECNOLOGIAS DIGITAIS",
+        "35101|SEMOBI|5441|IMPLANTAÇÃO DO SISTEMA AQUAVIÁRIO",
+        "35201|DER-ES|2341|MANUTENÇÃO E RECUPERAÇÃO DA MALHA RODOVIÁRIA",
+        "36101|SEDURB|3532|INFRAESTRUTURA E URBANIZAÇÃO DE ESPAÇOS",
+        "36202|CESAN|1563|AMPLIAÇÃO SISTEMAS ABASTECIMENTO DE ÁGUA",
+        "42101|SEDU|2376|TRASPORTE ESCOLAR",
+        "42101|SEDU|6684|ALIMENTAÇÃO ESCOLAR",
+        "44901|FES|2184|MANUTENÇÃO DA REDE HOSPITALAR PRÓPRIA",
+        "44901|FES|4707|SERVIÇO DE ATENDIMENTO MÓVEL DE URGÊNCIA - SAMU",
+        "45102|PCES|2903|INVESTIGAÇÃO E POLÍCIA JUDICIÁRIA",
+        "45103|PMES|2902|POLICIAMENTO OSTENSIVO E PRESERVAÇÃO DA ORDEM PÚBLICA",
+        "45104|CBMES|2900|PROTEÇÃO, PREVENÇÃO E CONTROLE DE ACIDENTES"
+    ];
+
+    const uoActionsMap = {};
+    const uoList = [];
+    
+    uoDataMock.forEach(rowStr => {
+        const row = rowStr.split('|');
+        const uoKey = `${row[0]} - ${row[1]}`;
+        const acaoKey = `${row[2]} - ${row[3]}`;
+        
+        if (!uoActionsMap[uoKey]) {
+            uoActionsMap[uoKey] = [];
+            uoList.push({ value: uoKey, label: uoKey });
+        }
+        uoActionsMap[uoKey].push(acaoKey);
+    });
 
     const updateAcoes = () => {
         const uoChoices = choicesMap.get('filter-uo');
@@ -888,12 +908,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const selectedUOs = uoChoices.getValue(true);
         acaoChoices.clearStore();
 
+        // REGRA DE NEGÓCIO: Só preenche a combo de ação se existir uma UO selecionada
         let filteredActions = [];
-        if (selectedUOs.length === 0) {
-            Object.values(uoActionsMap).forEach(actions => {
-                filteredActions = filteredActions.concat(actions);
-            });
-        } else {
+        if (selectedUOs.length > 0) {
             selectedUOs.forEach(uo => {
                 if (uoActionsMap[uo]) {
                     filteredActions = filteredActions.concat(uoActionsMap[uo]);
@@ -920,6 +937,8 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(() => {
         const uoChoices = choicesMap.get('filter-uo');
         if (uoChoices) {
+            uoChoices.clearStore();
+            uoChoices.setChoices(uoList, 'value', 'label', true);
             uoChoices.setChoiceByValue('27101 - SEP');
         }
         updateAcoes();
